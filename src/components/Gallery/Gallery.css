@@ -1,0 +1,88 @@
+/* ...existing code... */
+
+.gallery-actions {
+  display: flex;
+  gap: 12px;
+  /* margin: 10px 10px; */
+  justify-content: center;
+}
+
+.like-btn, .share-btn, .comment-btn {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.like-btn:hover, .share-btn:hover, .comment-btn:hover {
+  background: #e0e0ff;
+}
+
+.comment-section {
+  margin-top: 8px;
+  text-align: left;
+}
+
+.comment-input {
+  width: 70%;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-right: 6px;
+  height: 30px;
+    font-size: 14px;
+}
+
+.comments-list {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.comment-item {
+  background: #f8f8ff;
+  border-radius: 5px;
+  padding: 4px 8px;
+  margin-bottom: 3px;
+}
+/* ...existing code... */
+
+.gallery-grid {
+  display: grid;
+grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+  margin: 0px 100px;
+}
+
+.gallery-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gallery-img {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+.gallery-desc {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.gallery-reward {
+  display: block;
+  font-weight: bold;
+  color: #007bff;
+  font-size: 1.1rem;
+}
+/* ...existing code... */

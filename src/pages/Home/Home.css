@@ -1,0 +1,194 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f7f9fb;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+  color: #fff;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar ul li {
+  margin: 0 15px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #fff;
+}
+
+.navbar ul li:hover {
+  color: #28a745;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+}
+.nav-link:hover {
+  color: #28a745;
+  text-decoration: underline;
+}
+
+/* Hero Section */
+.app-header {
+  color: #000;
+  text-align: center;
+  margin: 30px auto;
+  max-width: 900px;
+  padding: 30px 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+.app-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+.app-header p {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Posts Section */
+.posts-section {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+.posts-section h2 {
+  margin-bottom: 20px;
+  color: #007bff;
+}
+
+.post-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.post-card img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+.post-card p {
+  color: #222;
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+/* Post actions */
+.post-actions {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+  padding-top: 10px;
+  font-size: 16px;
+}
+.post-actions span {
+  cursor: pointer;
+  color: #555;
+  transition: color 0.3s;
+}
+.post-actions span:hover {
+  color: #007bff;
+}
+
+/* Comment box */
+.comment-box {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+.comment-box input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 8px;
+  color:red;
+}
+.comment-box button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+.comment-box button:hover {
+  background: #0056b3;
+}
+.comment {
+  margin-top: 6px;
+  font-size: 18px;     /* bigger text */
+  text-align: left;   /* align text to right */
+  margin-right: 10px; 
+  color: black;
+  background: #f1f1f1;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+/* Base Reward Badge */
+.reward-badge {
+  display: inline-block;
+  color: #fff;
+  font-weight: bold;
+  padding: 6px 14px;
+  border-radius: 8px;
+  margin-top: 8px;
+  font-size: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover effect */
+.reward-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Dynamic Colors */
+.reward-badge.low {
+  background: #2ecc71; /* Green for small rewards */
+}
+
+.reward-badge.medium {
+  background: #f39c12; /* Orange for medium rewards */
+}
+
+.reward-badge.high {
+  background: #e63946; /* Red for high rewards */
+}
+
+/* ...existing code... */
+
+.carousel-section {
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  text-align: center;
+}
+
+.carousel-section h2 {
+  margin-bottom: 18px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* ...existing code... */

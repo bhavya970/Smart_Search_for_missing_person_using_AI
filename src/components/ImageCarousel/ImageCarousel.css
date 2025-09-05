@@ -1,0 +1,40 @@
+.carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+.carousel-image-card {
+  text-align: center;
+  margin: 10px;
+}
+.carousel-img {
+  max-width: 350px;
+  max-height: 350px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.carousel-btn {
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  margin: 0 10px;
+  border-radius: 50%;
+  width: 24px;
+  height: 48px;
+}
+.carousel-indicators {
+  /* margin-top: 8px; */
+}
+.indicator-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 3px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+.indicator-dot.active {
+  background: #007bff;
+}

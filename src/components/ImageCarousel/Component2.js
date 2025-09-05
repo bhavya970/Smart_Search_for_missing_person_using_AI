@@ -1,0 +1,65 @@
+import { useEffect, useState } from "react";
+
+export default function Component2() {
+    const text = "Search Person by Face Photo";
+    const typingSpeed = 150; // ms per character
+
+    const [displayedText, setDisplayedText] = useState("");
+
+    useEffect(() => {
+        let i = 0;
+        const interval = setInterval(() => {
+            setDisplayedText(text.slice(0, i + 1));
+            i++;
+            if (i === text.length) clearInterval(interval);
+        }, typingSpeed);
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <div style={{ background: "linear-gradient(4deg, black, #710707)", borderRadius: "8px", height: "500px", width: "100vw", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div
+                style={{
+                    height: "330px",
+                   width:"400px",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "2px solid white",
+                    marginLeft: "100px"
+                }}
+            >
+                <img
+                    src="/images/image2.png"
+                    alt="family"
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        // objectFit: "cover"
+                    }}
+                />
+            </div>
+            <div style={{ marginRight: "100px", width: "50vw", color: "white" }}>
+                <h2 style={{ color: "white", fontSize: "2.2rem", fontWeight: "700" }}>
+                    {displayedText}
+                    <span style={{ borderRight: "2px solid white", marginLeft: "2px", animation: "blink 1s steps(1) infinite" }}>&nbsp;</span>
+                </h2>
+                <p style={{ fontSize: "1.1rem", fontWeight: "400" }}>
+                    Search by face photo to get the best possible results  providing you with accurate and similar matched results.
+                </p>
+            </div>
+
+            
+            <style>
+                {`
+                    @keyframes blink {
+                        0% { opacity: 1; }
+                        50% { opacity: 0; }
+                        100% { opacity: 1; }
+                    }
+                `}
+            </style>
+        </div>
+    );
+}

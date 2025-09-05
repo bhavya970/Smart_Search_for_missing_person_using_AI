@@ -2,37 +2,83 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
-  background-color: #282c34;
+  /* background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9JfDW4PyOek9TmwhapVZP-cMA3vgYMXvj0A&s"); */
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /* background-repeat: no-repeat; */
+  /* background-size: cover; */
   font-size: calc(10px + 2vmin);
   color: white;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Adds blur effect */
+  -webkit-backdrop-filter: blur(10px); /* Ensures compatibility with Safari */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Adds a subtle border */
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.App-link {
-  color: #61dafb;
+form {
+  /* background-image: url("https://img.freepik.com/free-vector/gradient-connection-background_52683-118592.jpg"); */
+  padding: 20px;
+  border-radius: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+input {
+  margin: 5px;
+  padding: 8px;
+  border-radius: 1000px;
+  border: 1px solid #ccc;
+}
+
+.navbar {
+  display: flex;
+  justify-content: center; /* Centers navigation items horizontally */
+  align-items: center; /* Centers navigation items vertically */
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  padding: 10px 20px;
+  border-radius: 10px; /* Adds rounded corners */
+}
+
+.navbar h1 {
+  margin-right: auto; /* Pushes the title to the left */
+  font-size: 24px;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar ul li {
+  margin: 0 15px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.navbar ul li:hover {
+  text-decoration: underline;
+}
+
+.sidebar {
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.main-content {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Semi-transparent white background */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
 }
