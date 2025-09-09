@@ -12,8 +12,8 @@ function Signup() {
   const navigate = useNavigate();
 
   const carouselImages = [
-    "./ms-1.jpg", // Image 1 from public folder
-    "./ms-2.webp", // Image 2 from public folder
+    "./ms-1.jpg",
+    "./ms-2.webp",
     "./ms-3.jpg",
   ];
 
@@ -29,23 +29,19 @@ function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      username,
-      email,
-      password,
-    };
+    const payload = { username, email, password };
 
     try {
       const response = await axios.post(
-        "http://18.222.131.4:8000/register",
-        payload
-      );
-
-      if (response.data.status === "User registered successfully!") {
+  "http://localhost:5000/register",  // ✅ correct URL
+  payload
+);
+      if (response.data.message === "User registered successfully!") {
         setError("");
         setIsRegistered(true);
-        setTimeout(() => navigate("/login"), 1500);
-      } else if (response.data.status === "Username or email already exists!") {
+        // setTimeout(() => navigate("/login"), 1500);
+        navigate("/login"); 
+      } else if (response.data.message === "Username or email already exists!") {
         setError("Username or email already exists!");
       } else {
         setError("Invalid registration details");
@@ -186,7 +182,6 @@ function Signup() {
             )}
             <button
               type="submit"
-              onClick={() => navigate("/login")}
               style={{
                 width: "100%",
                 padding: "10px",
@@ -223,3 +218,4 @@ function Signup() {
 }
 
 export default Signup;
+

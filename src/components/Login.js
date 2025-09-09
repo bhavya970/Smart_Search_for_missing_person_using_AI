@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import e from "cors";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
@@ -24,21 +26,18 @@ function Login() {
     }, 3000); // Change image every 3 seconds
     return () => clearInterval(interval);
   }, [carouselImages.length]);
-
   const handleLogin = async (e) => {
     e.preventDefault();
-    const payload = {
-      username: username,
-      password: password,
-    };
+    // const payload = {
+    //   email: emailInput.value,  // input field where user types email
+    //   password: passwordInput.value
+    // };
 
     try {
-      const response = await axios.post(
-        "http://18.222.131.4:8000/get-user-details",
-        payload
-      );
+      const payload = { email, password };
+      const response = await axios.post("http://localhost:5000/login", payload);
 
-      if (response.data.status === "success") {
+      if (response.status === 200) {  
         navigate("/home");
         setIsLoggedIn(true);
         setError("");
@@ -46,9 +45,8 @@ function Login() {
         setError("Invalid username or password");
       }
     } catch (error) {
-      navigate("/home");
-
-      if (error.response) {
+      // navigate("/home");
+      if (error.response && error.response.status === 400) {
         setError(error.response.data.message || "Invalid username or password");
       } else {
         setError("Invalid username or password");
@@ -57,30 +55,20 @@ function Login() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        backgroundColor: "#f5f5f5",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
+    <div className="app" style={{ minHeight: "100vh", width: "100vw",display:"flex",flexDirection:"row",padding:"3% 5% 3% 2%", }}>
       {/* Left side: Image carousel */}
       <div
         style={{
           flex: 1,
-          backgroundColor: "#333",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "end",
           overflow: "hidden",
         }}
       >
         <div
           style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "10px",
+            width: "90%",
+            height: "90%",
             overflow: "hidden",
           }}
         >
@@ -90,7 +78,7 @@ function Login() {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover",
+              objectFit: "fill",
               transition: "opacity 1s ease-in-out",
             }}
           />
@@ -103,14 +91,11 @@ function Login() {
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
-          backgroundColor: "#fff",
+          justifyContent: "start",
           boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <div
+        {/* <div
           style={{
             width: "80%",
             maxWidth: "400px",
@@ -130,40 +115,40 @@ function Login() {
           <p style={{ color: "#333", fontSize: "1rem", margin: "10px 0 0 0" }}>
             Secure Login
           </p>
-        </div>
+        </div> */}
         {isLoggedIn ? (
           <h2>Welcome, {username}!</h2>
         ) : (
           <form
             onSubmit={handleLogin}
             style={{
-              width: "80%",
-              maxWidth: "400px",
-              backgroundColor: "rgb(193 192 192)",
+              background: "linear-gradient(4deg, black, #710707)",
               padding: "20px",
-              borderRadius: "10px",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              height:"90%",
+              borderRadius:"0px"
             }}
           >
-            <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Login</h2>
-            <div style={{ marginBottom: "15px" }}>
-              <label style={{ display: "block", marginBottom: "5px" }}>
-                Username:
+            <h2 style={{ textAlign: "center", marginBottom: "50px" }}>Login</h2>
+            <div style={{ marginBottom: "15px",display:"flex",flexDirection:"row",alignItems:"center",gap:48 }}>
+              <label style={{ textAlign:"left", margin: "0px 0px 0px 10px" , fontSize: "1.4rem", color: "white", fontWeight: "300" }}>
+                Email: 
               </label>
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 style={{
-                  width: "90%",
+                  width: "70%",
                   padding: "10px",
                   borderRadius: "5px",
                   border: "1px solid #ccc",
+                  fontSize:"1.2rem"
                 }}
               />
             </div>
-            <div style={{ marginBottom: "15px" }}>
-              <label style={{ display: "block", marginBottom: "5px" }}>
+            <div style={{ marginBottom: "15px",display:"flex",flexDirection:"row",alignItems:"center",gap:12 }}>
+              <label style={{ textAlign:"left", margin: "0px 0px 0px 10px" , fontSize: "1.4rem", color: "white", fontWeight: "300" }}>
                 Password:
               </label>
               <input
@@ -171,26 +156,32 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={{
-                  width: "90%",
+                  width: "70%",
                   padding: "10px",
                   borderRadius: "5px",
                   border: "1px solid #ccc",
+                  fontSize:"1.2rem"
+
                 }}
               />
             </div>
             {error && (
               <p style={{ color: "red", marginBottom: "15px" }}>{error}</p>
             )}
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
             <button
               type="submit"
-              onClick={() => navigate("/home")}
+              // onClick={() => navigate("/home")}
               style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "5px",
-                backgroundColor: "#007BFF",
+                width: "50%",
+                background: "#4a90e2",
                 color: "#fff",
                 border: "none",
+                borderRadius: "6px",
+                marginTop:"60px",
+                height:"40px",
+                padding: "8px 20px",
+                fontSize: "1rem",
                 cursor: "pointer",
               }}
             >
@@ -200,18 +191,20 @@ function Login() {
               type="button"
               onClick={() => navigate("/signup")}
               style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "5px",
+                width: "50%",
+                padding: "8px 20px",
+                borderRadius: "6px",
                 backgroundColor: "#6c757d",
+                fontSize: "1rem",
                 color: "#fff",
                 border: "none",
-                marginTop: "10px",
+                marginTop: "30px",
                 cursor: "pointer",
               }}
             >
               Sign up
             </button>
+            </div>
           </form>
         )}
       </div>

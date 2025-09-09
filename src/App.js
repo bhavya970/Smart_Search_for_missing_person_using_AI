@@ -15,9 +15,10 @@ function App() {
     <ImageProvider>
     <Router>
       <div className="App">
-        <header className="App-header">
+        {/* <header className="App-header"> */}
           <Routes>
-            <Route exact path="/" element={<Login />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
@@ -26,7 +27,7 @@ function App() {
             <Route path="/faqs" element={<Faqs />} />
             <Route path="/logout" element={<Logout />} />
           </Routes>
-        </header>
+        {/* </header> */}
       </div>
     </Router>
     </ImageProvider>

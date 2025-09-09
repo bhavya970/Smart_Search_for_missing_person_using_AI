@@ -29,7 +29,7 @@ body {
 }
 
 .navbar ul li:hover {
-  color: #28a745;
+  color: #007bff;
 }
 
 .nav-link {
@@ -37,7 +37,7 @@ body {
   text-decoration: none;
 }
 .nav-link:hover {
-  color: #28a745;
+  color: #007bff;
   text-decoration: underline;
 }
 

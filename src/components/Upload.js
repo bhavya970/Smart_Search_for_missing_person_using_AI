@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Gallery from "./Gallery/Gallery";
+import Navbar from "./Navbar";
 
 const Upload = () => {
   const [image, setImage] = useState(null);
@@ -44,6 +45,7 @@ const Upload = () => {
       const data = await response.json();
       if (data.success) {
         alert("✅ Image uploaded successfully!");
+        navigate("/home");
       } else {
         setError(data.error || "Upload failed.");
       }
@@ -55,73 +57,39 @@ const Upload = () => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        width: "100vw",
-        padding: "0",
-        margin: "0",
-        boxSizing: "border-box",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
+    <div className="app" style={{ minHeight: "100vh", width: "100vw" }}>
       {/* Navbar */}
-      <nav
-        className="navbar"
-        style={{
-          marginBottom: "0",
-          backgroundColor: "#212529",
-          padding: "12px 20px",
-        }}
+      <Navbar/>
+
+<section
+        className="carousel-section"
       >
-        <ul
-          style={{
-            listStyle: "none",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "30px",
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          <li
-            style={{ color: "#fff", cursor: "pointer" }}
-            onClick={() => navigate("/home")}
-          >
-            Home
-          </li>
-          <li
-            style={{ color: "#fff", cursor: "pointer" }}
-            onClick={() => navigate("/about")}
-          >
-            About
-          </li>
-          <li style={{ color: "#28a745", fontWeight: "bold" }}>Upload</li>
-          <li style={{ color: "#fff", cursor: "pointer" }}
-          onClick={() => navigate("/matches")}
-          >Matches</li>
-          <li
-            style={{ color: "#fff", cursor: "pointer" }}
-            onClick={() => navigate("/faqs")}
-          >
-            Faqs
-          </li>
-          <li
-            style={{
-              color: "#fff",
-              cursor: "pointer",
-              fontWeight: "500",
-              transition: "color 0.3s",
-            }}
-            onClick={() => navigate("/logout")}
-            onMouseOver={(e) => (e.target.style.color = "#28a745")}
-            onMouseOut={(e) => (e.target.style.color = "#fff")}
-          >
-            Logout
-          </li>
-        </ul>
-      </nav>
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row",margin:"10px 0px" }}>
+  <div style={{
+    background: "linear-gradient(4deg, black, #710707)",
+    borderRadius: "8px",
+    height: "350px",
+    width: "100vw",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-around",
+    padding: "36px 100px",
+    marginBottom: "24px",
+  }}>
+  <h1 style={{ color: "white", fontSize: "2.6rem", fontWeight: "800", marginBottom: 24 }}>
+    Upload Missing Person Information
+  </h1>
+  <h3 style={{ fontSize: "1.4rem", color: "white", fontWeight: "400", marginBottom: 16 }}>
+    Help us reunite families by submitting details and a photo of a missing person.
+  </h3>
+  <p style={{ fontSize: "1.1rem", color: "white", fontWeight: "300" }}>
+    Your submission will be securely stored and matched using AI-powered face recognition.
+    Please provide clear images and accurate information to improve search results.
+  </p>
+  </div>
+  </div>
+</section>
 
       {/* Upload Section */}
       <section
@@ -136,7 +104,7 @@ const Upload = () => {
           color: "#222",
         }}
       >
-        <h2 style={{ color: "#4a90e2" }}>Upload Missing Person Info</h2>
+        <h2 style={{ fontSize: "1.8rem", color: "white", fontWeight: "500", marginBottom: 16,color:"black" }}>Upload Missing Person Info</h2>
         <p style={{ fontSize: "1rem", color: "#444" }}>
           Upload a photo and provide details. Add a reward (in Rupees) for
           finding this person.
@@ -154,6 +122,7 @@ const Upload = () => {
             border: "1px solid #ccc",
             width: "100%",
             background: "#fff",
+            fontSize: "1.2rem", color: "black", fontWeight: "300"
           }}
         />
         {previewUrl && (
@@ -191,6 +160,7 @@ const Upload = () => {
             marginBottom: "12px",
             resize: "none",
             minHeight: "80px",
+             fontSize: "1.2rem", color: "black", fontWeight: "300"
           }}
         />
 
@@ -206,6 +176,7 @@ const Upload = () => {
             borderRadius: "8px",
             border: "1px solid #ccc",
             marginBottom: "15px",
+             fontSize: "1.2rem", color: "black", fontWeight: "300"
           }}
           required
         />

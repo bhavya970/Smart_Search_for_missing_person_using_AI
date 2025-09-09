@@ -8,6 +8,7 @@ import Component2 from "../../components/ImageCarousel/Component2";
 import Component3 from "../../components/ImageCarousel/Component3";
 import Component4 from "../../components/ImageCarousel/Component4";
 import Gallery from "../../components/Gallery/Gallery";
+import Navbar from "../../components/Navbar";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -67,20 +68,7 @@ const Home = () => {
   return (
     <div className="app" style={{ minHeight: "100vh", width: "100vw" }}>
       {/* Navbar */}
-      <nav className="navbar" style={{ marginBottom: "0" }}>
-        <ul>
-          <li>Home</li>
-          <li onClick={() => navigate("/about")}>About</li>
-          <li onClick={() => navigate("/upload")}>Upload</li>
-          <li onClick={() => navigate("/matches")}>Matches</li>
-          <li>
-            <Link className="nav-link" to="/faqs">
-              FAQs
-            </Link>
-          </li>
-          <li onClick={() => navigate("/logout")}>Logout</li>
-        </ul>
-      </nav>
+      <Navbar/>
 
       {/* Hero Section */}
       {/* <header className="app-header">

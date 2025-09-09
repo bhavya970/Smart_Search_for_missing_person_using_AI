@@ -1,191 +1,161 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/Navbar";
+import "./../Home/Home.css";
 
 const About = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif" }}>
-      {/* ✅ Keep your original Navbar but styled */}
-      <nav
-        className="navbar"
-        style={{
-          marginBottom: "0",
-          backgroundColor: "#212529",
-          padding: "12px 20px",
-        }}
-      >
-        <ul
-          style={{
-            listStyle: "none",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "30px",
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          <li
-            style={{
-              color: "#fff",
-              cursor: "pointer",
-              fontWeight: "500",
-              transition: "color 0.3s",
-            }}
-            onClick={() => navigate("/home")}
-            onMouseOver={(e) => (e.target.style.color = "#28a745")}
-            onMouseOut={(e) => (e.target.style.color = "#fff")}
-          >
-            Home
-          </li>
-          <li
-            style={{
-              color: "#fff",
-              cursor: "pointer",
-              fontWeight: "500",
-              transition: "color 0.3s",
-            }}
-            onClick={() => navigate("/about")}
-            onMouseOver={(e) => (e.target.style.color = "#28a745")}
-            onMouseOut={(e) => (e.target.style.color = "#fff")}
-          >
-            About
-          </li>
-          <li
-            style={{
-              color: "#fff",
-              cursor: "pointer",
-              fontWeight: "500",
-              transition: "color 0.3s",
-            }}
-            onClick={() => navigate("/upload")}
-            onMouseOver={(e) => (e.target.style.color = "#28a745")}
-            onMouseOut={(e) => (e.target.style.color = "#fff")}
-          >
-            Upload
-          </li>
-          <li
-            style={{
-              color: "#fff",
-              cursor: "pointer",
-              fontWeight: "500",
-              transition: "color 0.3s",
-            }}
-            onClick={() => navigate("/matches")}
-            onMouseOver={(e) => (e.target.style.color = "#28a745")}
-            onMouseOut={(e) => (e.target.style.color = "#fff")}
-          >
-           Matches
-          </li>
-          <li
-            style={{
-              color: "#fff",
-              cursor: "pointer",
-              fontWeight: "500",
-              transition: "color 0.3s",
-            }}
-            onClick={() => navigate("/faqs")}
-            onMouseOver={(e) => (e.target.style.color = "#28a745")}
-            onMouseOut={(e) => (e.target.style.color = "#fff")}
-          >
-          Faqs
-          </li>
-          <li
-            style={{
-              color: "#fff",
-              cursor: "pointer",
-              fontWeight: "500",
-              transition: "color 0.3s",
-            }}
-            onClick={() => navigate("/logout")}
-            onMouseOver={(e) => (e.target.style.color = "#28a745")}
-            onMouseOut={(e) => (e.target.style.color = "#fff")}
-          >
-          Logout
-          </li>
-        </ul>
-      </nav>
+    <div className="app" style={{ minHeight: "100vh", width: "100vw" }}>
+      <Navbar />
 
-      {/* ✅ Hero Section */}
-      <section className="py-5 bg-success text-white text-center">
-        <div className="container">
-          <h1 className="mb-4">About Us</h1>
-          <p className="lead">
+      {/* Hero Section */}
+      <section
+        className="carousel-section"
+      >
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row",margin:"10px 0px" }}>
+        <div style={{ background: "linear-gradient(4deg, black, #710707)", borderRadius: "8px", height: "450px", width: "100vw", display: "flex", flexDirection:"column",alignItems: "center", justifyContent: "space-around" ,padding:"36px 100px"}}>
+          <h1 style={{ color:"white",fontSize:"2.6rem",fontWeight:"800",marginBottom: 24 }}>About Us</h1>
+          <h3 style={{ fontSize: "1.4rem",color:"white", fontWeight: "400" ,marginBottom: 16 }}>
             Welcome to <strong>AI Missing Person Finder</strong>, a collaborative
             platform for families, law enforcement, and the public to help
             identify and reunite missing persons.
-          </p>
-          <p>
+          </h3>
+          <p style={{ fontSize: "1.1rem",color:"white", fontWeight: "300" }}>
             Our mission is to leverage artificial intelligence and community
             support to bring loved ones back home. By combining advanced face
             recognition technology with collective participation, we make the
             search faster, more accurate, and impactful.
           </p>
         </div>
+        </div>
       </section>
 
-      {/* ✅ Our Values Section */}
-      <section className="py-5 bg-success-subtle">
-        <div className="container text-center">
-          <h2>Our Values</h2>
-          <div className="row mt-4">
-            <div className="col-md-4">
-              <div className="card p-4 shadow-lg border-0 transition-hover">
-                <i className="bi bi-shield-lock display-4 text-primary"></i>
-                <h5 className="mt-3">Trust</h5>
-                <p>Ensuring security, privacy, and reliability in every step.</p>
-              </div>
+      {/* Our Values Section */}
+      <section
+        style={{
+          padding: "48px 0",
+          background: "#f4f8fc",
+        }}
+      >
+        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{ color: "#4a90e2" }}>Our Values</h2>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "32px",
+              marginTop: "32px",
+              flexWrap: "wrap",
+              color:"black"
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: "14px",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                padding: "32px 24px",
+                width: "260px",
+                textAlign: "center",
+              }}
+            >
+              <span style={{ fontSize: "2.5rem", color: "#4a90e2" }}>🛡️</span>
+              <h3 style={{ fontSize: "1.4rem", fontWeight: "400", marginTop: 32 }}>Trust</h3>
+              <p style={{ fontSize: "1.2rem", fontWeight: "300",marginTop:24 }}>Ensuring security, privacy, and reliability in every step.</p>
             </div>
-            <div className="col-md-4">
-              <div className="card p-4 shadow-lg border-0 transition-hover">
-                <i className="bi bi-people display-4 text-primary"></i>
-                <h5 className="mt-3">Community</h5>
-                <p>
-                  Bringing families, the public, and law enforcement together
-                  for a united cause.
-                </p>
-              </div>
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: "14px",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                padding: "32px 24px",
+                width: "260px",
+                textAlign: "center",
+              }}
+            >
+              <span style={{ fontSize: "2.5rem", color: "#4a90e2" }}>🤝</span>
+              <h3 style={{ fontSize: "1.4rem", fontWeight: "400", marginTop: 16 }}>Community</h3>
+              <p style={{ fontSize: "1.2rem", fontWeight: "300",marginTop:24 }}>
+                Bringing families, the public, and law enforcement together
+                for a united cause.
+              </p>
             </div>
-            <div className="col-md-4">
-              <div className="card p-4 shadow-lg border-0 transition-hover">
-                <i className="bi bi-lightbulb display-4 text-primary"></i>
-                <h5 className="mt-3">Innovation</h5>
-                <p>
-                  Using AI-powered image recognition to accelerate the search
-                  process.
-                </p>
-              </div>
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: "14px",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                padding: "32px 24px",
+                width: "260px",
+                textAlign: "center",
+              }}
+            >
+              <span style={{ fontSize: "2.5rem", color: "#4a90e2" }}>💡</span>
+              <h3 style={{ fontSize: "1.4rem", fontWeight: "400", marginTop: 16 }}>Innovation</h3>
+              <p style={{ fontSize: "1.2rem", fontWeight: "300",marginTop:24 }}>
+                Using AI-powered image recognition to accelerate the search
+                process.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ✅ Footer */}
-      <footer className="bg-dark text-white text-center py-4">
-        <div className="container">
-          <p>
+      {/* Footer */}
+      <footer
+        style={{
+          background: "#222",
+          color: "#fff",
+          textAlign: "center",
+          padding: "32px 0",
+        }}
+      >
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <p style={{ fontSize: "1.2rem", fontWeight: "300",marginTop:24 }}>
             Subscribe to get updates, important news, and alerts about missing
             persons.
           </p>
-          <form className="row g-2 justify-content-center">
-            <div className="col-auto">
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Your email"
-              />
-            </div>
-            <div className="col-auto">
-              <button type="submit" className="btn btn-success">
-                Subscribe
-              </button>
-            </div>
+          <form
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "8px",
+              margin: "16px 0",
+            }}
+          >
+            <input
+              type="email"
+              style={{
+                padding: "8px 12px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "1rem",
+              }}
+              placeholder="Your email"
+            />
+            <button
+              type="submit"
+              style={{
+                background: "#4a90e2",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                marginTop:"6px",
+                height:"40px",
+                padding: "8px 20px",
+                fontSize: "1rem",
+                cursor: "pointer",
+              }}
+            >
+              Subscribe
+            </button>
           </form>
-          <p className="mt-3">
+          <h2 style={{ fontSize: "1.4rem", fontWeight: "400", marginTop: 16 }}>
             &copy; {new Date().getFullYear()} AI Missing Person Finder. All rights
             reserved.
-          </p>
+          </h2>
         </div>
       </footer>
     </div>
@@ -193,4 +163,3 @@ const About = () => {
 };
 
 export default About;
-
