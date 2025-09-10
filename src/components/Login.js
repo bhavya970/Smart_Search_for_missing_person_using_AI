@@ -4,7 +4,7 @@ import axios from "axios";
 import e from "cors";
 
 function Login() {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(null);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -36,11 +36,14 @@ function Login() {
     try {
       const payload = { email, password };
       const response = await axios.post("http://localhost:5000/login", payload);
-
+      console.log("Login Response:", response.data);
       if (response.status === 200) {  
-        navigate("/home");
+        setUsername(response.data.username);
         setIsLoggedIn(true);
         setError("");
+        setTimeout(() => {
+    navigate("/home");
+  }, 2000);
       } else {
         setError("Invalid username or password");
       }
@@ -50,6 +53,7 @@ function Login() {
         setError(error.response.data.message || "Invalid username or password");
       } else {
         setError("Invalid username or password");
+        // alert(error.response?.data?.message || "Login failed");
       }
     }
   };
@@ -117,7 +121,20 @@ function Login() {
           </p>
         </div> */}
         {isLoggedIn ? (
-          <h2>Welcome, {username}!</h2>
+          <h2
+  style={{
+    color: "#4a90e2",
+    fontSize: "2rem",
+    fontWeight: "600",
+    textAlign: "center",
+    marginTop: "40px",
+    letterSpacing: "1px",
+    textShadow: "1px 1px 3px rgba(0,0,0,0.2)",
+  }}
+>
+  Welcome, {username}!
+</h2>
+
         ) : (
           <form
             onSubmit={handleLogin}
@@ -129,7 +146,7 @@ function Login() {
               borderRadius:"0px"
             }}
           >
-            <h2 style={{ textAlign: "center", marginBottom: "50px" }}>Login</h2>
+            <h2 style={{ textAlign: "center", marginBottom: "50px",color:"whitesmoke" }}>Login</h2>
             <div style={{ marginBottom: "15px",display:"flex",flexDirection:"row",alignItems:"center",gap:48 }}>
               <label style={{ textAlign:"left", margin: "0px 0px 0px 10px" , fontSize: "1.4rem", color: "white", fontWeight: "300" }}>
                 Email: 

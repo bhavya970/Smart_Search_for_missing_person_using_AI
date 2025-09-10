@@ -19,6 +19,7 @@ function Navbar() {
           </li>
           <li onClick={() => navigate("/logout")}>Logout</li>
         </ul>
+        <div id="google_translate_element" style={{ marginRight: "20px" }}></div>
       </nav>
     );
 }
