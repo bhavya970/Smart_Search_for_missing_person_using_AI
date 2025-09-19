@@ -8,6 +8,7 @@ import Faqs from "./components/Faqs";
 import Upload from "./components/Upload";
 import Logout from "./components/Logout";
 import Match from "./components/Matches"
+import Profile from "./components/Profile";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/matches" element={<Match />} />
             <Route path="/faqs" element={<Faqs />} />
             <Route path="/logout" element={<Logout />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         {/* </header> */}
       </div>

@@ -37,13 +37,17 @@ function Login() {
       const payload = { email, password };
       const response = await axios.post("http://localhost:5000/login", payload);
       console.log("Login Response:", response.data);
-      if (response.status === 200) {  
+      if (response.status === 200) {
+        sessionStorage.clear();
+        sessionStorage.setItem("user", JSON.stringify(response.data));
+
         setUsername(response.data.username);
+
         setIsLoggedIn(true);
         setError("");
         setTimeout(() => {
-    navigate("/home");
-  }, 2000);
+          navigate("/home");
+        }, 2000);
       } else {
         setError("Invalid username or password");
       }
@@ -59,7 +63,16 @@ function Login() {
   };
 
   return (
-    <div className="app" style={{ minHeight: "100vh", width: "100vw",display:"flex",flexDirection:"row",padding:"3% 5% 3% 2%", }}>
+    <div
+      className="app"
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        display: "flex",
+        flexDirection: "row",
+        padding: "3% 5% 3% 2%",
+      }}
+    >
       {/* Left side: Image carousel */}
       <div
         style={{
@@ -122,19 +135,18 @@ function Login() {
         </div> */}
         {isLoggedIn ? (
           <h2
-  style={{
-    color: "#4a90e2",
-    fontSize: "2rem",
-    fontWeight: "600",
-    textAlign: "center",
-    marginTop: "40px",
-    letterSpacing: "1px",
-    textShadow: "1px 1px 3px rgba(0,0,0,0.2)",
-  }}
->
-  Welcome, {username}!
-</h2>
-
+            style={{
+              color: "#4a90e2",
+              fontSize: "2rem",
+              fontWeight: "600",
+              textAlign: "center",
+              marginTop: "40px",
+              letterSpacing: "1px",
+              textShadow: "1px 1px 3px rgba(0,0,0,0.2)",
+            }}
+          >
+            Welcome, {username}!
+          </h2>
         ) : (
           <form
             onSubmit={handleLogin}
@@ -142,14 +154,38 @@ function Login() {
               background: "linear-gradient(4deg, black, #710707)",
               padding: "20px",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              height:"90%",
-              borderRadius:"0px"
+              height: "90%",
+              borderRadius: "0px",
             }}
           >
-            <h2 style={{ textAlign: "center", marginBottom: "50px",color:"whitesmoke" }}>Login</h2>
-            <div style={{ marginBottom: "15px",display:"flex",flexDirection:"row",alignItems:"center",gap:48 }}>
-              <label style={{ textAlign:"left", margin: "0px 0px 0px 10px" , fontSize: "1.4rem", color: "white", fontWeight: "300" }}>
-                Email: 
+            <h2
+              style={{
+                textAlign: "center",
+                marginBottom: "50px",
+                color: "whitesmoke",
+              }}
+            >
+              Login
+            </h2>
+            <div
+              style={{
+                marginBottom: "15px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 48,
+              }}
+            >
+              <label
+                style={{
+                  textAlign: "left",
+                  margin: "0px 0px 0px 10px",
+                  fontSize: "1.4rem",
+                  color: "white",
+                  fontWeight: "300",
+                }}
+              >
+                Email:
               </label>
               <input
                 type="email"
@@ -160,12 +196,28 @@ function Login() {
                   padding: "10px",
                   borderRadius: "5px",
                   border: "1px solid #ccc",
-                  fontSize:"1.2rem"
+                  fontSize: "1.2rem",
                 }}
               />
             </div>
-            <div style={{ marginBottom: "15px",display:"flex",flexDirection:"row",alignItems:"center",gap:12 }}>
-              <label style={{ textAlign:"left", margin: "0px 0px 0px 10px" , fontSize: "1.4rem", color: "white", fontWeight: "300" }}>
+            <div
+              style={{
+                marginBottom: "15px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <label
+                style={{
+                  textAlign: "left",
+                  margin: "0px 0px 0px 10px",
+                  fontSize: "1.4rem",
+                  color: "white",
+                  fontWeight: "300",
+                }}
+              >
                 Password:
               </label>
               <input
@@ -177,50 +229,56 @@ function Login() {
                   padding: "10px",
                   borderRadius: "5px",
                   border: "1px solid #ccc",
-                  fontSize:"1.2rem"
-
+                  fontSize: "1.2rem",
                 }}
               />
             </div>
             {error && (
               <p style={{ color: "red", marginBottom: "15px" }}>{error}</p>
             )}
-            <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-            <button
-              type="submit"
-              // onClick={() => navigate("/home")}
+            <div
               style={{
-                width: "50%",
-                background: "#4a90e2",
-                color: "#fff",
-                border: "none",
-                borderRadius: "6px",
-                marginTop:"60px",
-                height:"40px",
-                padding: "8px 20px",
-                fontSize: "1rem",
-                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/signup")}
-              style={{
-                width: "50%",
-                padding: "8px 20px",
-                borderRadius: "6px",
-                backgroundColor: "#6c757d",
-                fontSize: "1rem",
-                color: "#fff",
-                border: "none",
-                marginTop: "30px",
-                cursor: "pointer",
-              }}
-            >
-              Sign up
-            </button>
+              <button
+                type="submit"
+                // onClick={() => navigate("/home")}
+                style={{
+                  width: "50%",
+                  background: "#4a90e2",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  marginTop: "60px",
+                  height: "40px",
+                  padding: "8px 20px",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                }}
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/signup")}
+                style={{
+                  width: "50%",
+                  padding: "8px 20px",
+                  borderRadius: "6px",
+                  backgroundColor: "#6c757d",
+                  fontSize: "1rem",
+                  color: "#fff",
+                  border: "none",
+                  marginTop: "30px",
+                  cursor: "pointer",
+                }}
+              >
+                Sign up
+              </button>
             </div>
           </form>
         )}

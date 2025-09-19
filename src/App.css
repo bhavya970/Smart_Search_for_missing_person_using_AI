@@ -37,7 +37,7 @@ input {
   display: flex;
   justify-content: center; /* Centers navigation items horizontally */
   align-items: center; /* Centers navigation items vertically */
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  background-color: rgba(52, 47, 47, 0.7); /* Semi-transparent background */
   padding: 10px 20px;
   border-radius: 10px; /* Adds rounded corners */
 }
@@ -58,6 +58,7 @@ input {
   margin: 0 15px;
   cursor: pointer;
   font-size: 18px;
+  color:rgb(251, 246, 246);
 }
 
 .navbar ul li:hover {

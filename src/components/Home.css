@@ -9,9 +9,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #333;
+  /* background-color: #ec7272; */
   padding: 10px 20px;
-  color: #fff;
+  /* color: #fff; */
+  height: 100px;
 }
 
 .navbar ul {
@@ -25,7 +26,7 @@ body {
   margin: 0 15px;
   cursor: pointer;
   font-size: 18px;
-  color: #fff;
+  /* color: #fff; */
 }
 
 .navbar ul li:hover {
@@ -33,12 +34,13 @@ body {
 }
 
 .nav-link {
-  color: #fff;
+  /* color: #fff; */
   text-decoration: none;
 }
 .nav-link:hover {
   color: #007bff;
   text-decoration: underline;
+  cursor: pointer;
 }
 
 /* Hero Section */
@@ -175,4 +177,5 @@ body {
 .reward-badge.high {
   background: #e63946; /* Red for high rewards */
 }
+
 
