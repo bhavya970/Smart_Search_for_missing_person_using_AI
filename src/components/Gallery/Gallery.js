@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./Gallery.css";
+import GalleryCard from "./GalleryCard";
 
 const Gallery = () => {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [likes, setLikes] = useState({});
+  const [likes, setLikes] = useState(0);
   const [comments, setComments] = useState({});
   const [commentInput, setCommentInput] = useState({});
 
@@ -12,17 +13,29 @@ const Gallery = () => {
     fetch("http://localhost:5000/api/cases")
       .then((res) => res.json())
       .then((data) => {
+        console.log("fetched cases", data);
         setCases(data);
+        // setLikes(data.likeCount || 0);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
-  const handleLike = (id) => {
-    setLikes((prev) => ({
-      ...prev,
-      [id]: prev[id] ? prev[id] + 1 : 1,
-    }));
+  const handleLike = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/case/${id}/like`, {
+        method: "POST",
+      });
+      if (res.success) {
+        setCases((prevCases) =>
+          prevCases.map((c) =>
+            c._id === id ? { ...c, likeCount: c.likeCount + 1 } : c
+          )
+        );
+      }
+    } catch (err) {
+      // handle error if needed
+    }
   };
 
   const handleCommentChange = (id, value) => {
@@ -67,40 +80,65 @@ const Gallery = () => {
       ) : (
         <div className="gallery-grid">
           {cases.map((item) => (
-            <div className="gallery-card" key={item._id}>
-              <img src={item.imageUrl} alt="Missing Person" className="gallery-img" />
-              <div className="gallery-info">
-                <p className="gallery-desc">{item.description}</p>
-                <span className="gallery-reward">Reward: ₹{item.reward}</span>
-                <div className="gallery-actions">
-                  <button className="like-btn" onClick={() => handleLike(item._id)}>
-                    👍 {likes[item._id] || 0}
-                  </button>
-                  <button className="share-btn" onClick={() => handleShare(item)}>
-                    🔗 Share
-                  </button>
-                </div>
-                <div className="comment-section">
-                  <input
-                    type="text"
-                    placeholder="Add a comment..."
-                    value={commentInput[item._id] || ""}
-                    onChange={(e) => handleCommentChange(item._id, e.target.value)}
-                    className="comment-input"
-                  />
-                  <button className="comment-btn" onClick={() => handleAddComment(item._id)}>
-                    💬
-                  </button>
-                  <div className="comments-list">
-                    {(comments[item._id] || []).map((cmt, idx) => (
-                      <div key={idx} className="comment-item">
-                        {cmt}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <GalleryCard key={item._id} item={item} />
+            // <div className="gallery-card" key={item._id}>
+            //   <img
+            //     src={item.imageUrl}
+            //     alt="Missing Person"
+            //     className="gallery-img"
+            //   />
+            //   <div className="gallery-info">
+            //     <div
+            //       style={{
+            //         display: "flex",
+            //         flexDirection: "column",
+            //         gap: "2px",
+            //       }}
+            //     >
+            //       <div>
+            //         <label>{item.name}</label> <span>({item.age})</span>
+            //       </div>
+            //     </div>
+            //     <span className="gallery-reward">Reward: ₹{item.reward}</span>
+            //     <div className="gallery-actions">
+            //       <button
+            //         className="like-btn"
+            //         onClick={() => handleLike(item._id)}
+            //       >
+            //         👍 {item.likeCount}
+            //       </button>
+            //       <button
+            //         className="share-btn"
+            //         onClick={() => handleShare(item)}
+            //       >
+            //         🔗 Share
+            //       </button>
+            //     </div>
+            //     <hr />
+            //     <div className="uploaded-by">
+            //       {item?.profilePhoto && item?.profilePhoto !== "undefined" ? (
+            //         <img
+            //           src={item.profilePhoto}
+            //           alt="Uploader"
+            //           className="uploader-avatar"
+            //           onError={(e) => {
+            //             e.target.onerror = null;
+            //             e.target.src = "/default-avatar.png";
+            //           }}
+            //         />
+            //       ) : (
+            //         <div className="uploader-initials">
+            //           {(item.savedUserName || "U")
+            //             .split(" ")
+            //             .map((n) => n[0])
+            //             .join("")
+            //             .toUpperCase()}
+            //         </div>
+            //       )}
+            //       <span>Uploaded by: {item.savedUserName || "Unknown"}</span>
+            //     </div>
+            //   </div>
+            // </div>
           ))}
         </div>
       )}

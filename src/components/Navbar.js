@@ -9,7 +9,12 @@ function Navbar() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const savedUser = JSON.parse(sessionStorage.getItem("user"));
+    const savedUser = {
+      username: sessionStorage.getItem("username"),
+      email: sessionStorage.getItem("email"),
+      profilePhoto: sessionStorage.getItem("profilePhoto"),
+    };
+    console.log("Saved User from sessionStorage:", savedUser);
     if (savedUser) setUser(savedUser);
 
     // Dynamically load Google Translate script
@@ -32,7 +37,8 @@ function Navbar() {
     if (!window.googleTranslateElementInit) addGoogleTranslateScript();
   }, []);
 
-  const getInitial = (name) => (name ? name.charAt(0).toUpperCase() : "U");
+  const getInitial = (name) =>
+    name ? sessionStorage.getItem("username").charAt(0).toUpperCase() : "U";
   return (
     <nav className="navbar" style={{ marginBottom: "0" }}>
       <ul>
@@ -54,7 +60,7 @@ function Navbar() {
         }}
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
-        {user?.profilePhoto ? (
+        {user?.profilePhoto && !user?.profilePhoto === "undefined" ? (
           <img
             src={user?.profilePhoto}
             alt="User"

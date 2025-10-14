@@ -53,7 +53,7 @@ const Profile = () => {
     if (result.success) {
       const data = result.user;
       setUser(data);
-      sessionStorage.setItem("user", JSON.stringify(data));
+      sessionStorage.setItem("profilePhoto", data.profilePhoto);
     } else {
       console.error("Error updating profile:", response.message);
       alert("Failed to update profile.");
@@ -61,7 +61,12 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const savedUser = JSON.parse(sessionStorage.getItem("user"));
+    const savedUser = {
+      username: sessionStorage.getItem("username"),
+      email: sessionStorage.getItem("email"),
+      profilePhoto: sessionStorage.getItem("profilePhoto"),
+    };
+
     if (savedUser?.profilePhoto) setFile(savedUser.profilePhoto);
     if (savedUser) setUser(savedUser);
   }, []);
