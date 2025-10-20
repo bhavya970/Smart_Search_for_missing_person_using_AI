@@ -2,11 +2,16 @@ import { useState, useEffect } from "react";
 import React from "react";
 import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
+import ChatWindow from "./ChatWindow/Chat";
+import { BsChatFill } from "react-icons/bs";
+import axios from "axios";
 
 function Navbar() {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [showChat, setShowChat] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const userId = sessionStorage.getItem("userId");
   useEffect(() => {
@@ -64,6 +69,21 @@ function Navbar() {
     if (!window.googleTranslateElementInit) addGoogleTranslateScript();
   }, [userId]);
 
+  const handleOpenChat = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/chat-contacts/${userId}`);
+      if (res.data && res.data.length > 0) {
+        setSelectedUserId(res.data[0].userId);
+      } else {
+        setSelectedUserId(null);
+      }
+      setShowChat(true);
+    } catch (err) {
+      setShowChat(true);
+      setSelectedUserId(null);
+    }
+  };
+
   const getInitial = (name) =>
     name ? user?.username.charAt(0).toUpperCase() : "U";
   return (
@@ -88,15 +108,32 @@ function Navbar() {
           <div id="google_translate_element" className="custom-translate"></div>
         </li>
       </ul>
+      
       <div
         style={{
           position: "absolute",
           right: "10%",
           top: "calc (50% - 40px)",
           cursor: "pointer",
+           display: "flex",
+          alignItems: "center",
+          gap: "16px",
         }}
-        onClick={() => setDropdownOpen(!dropdownOpen)}
       >
+        <BsChatFill
+          style={{
+            height: "32px",
+            width: "32px",
+            cursor: "pointer",
+            color: "white",
+          }}
+          title="Open Chat"
+          onClick={handleOpenChat}
+        />
+         <div
+          style={{ cursor: "pointer" }}
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+        >
         {user?.profilePhoto && user?.profilePhoto !== "undefined" ? (
           <img
             src={user?.profilePhoto}
@@ -121,7 +158,7 @@ function Navbar() {
           >
             {getInitial(user?.username)}
           </div>
-        )}
+        )}</div>
 
         {/* Dropdown Menu */}
         {dropdownOpen && (
@@ -157,7 +194,58 @@ function Navbar() {
             </div>
           </div>
         )}
+         {showChat && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowChat(false)}
+        >
+          <div
+            style={{
+            background: "white",
+            borderRadius: "8px",
+            width: "70vw",
+            margin: "80px auto",
+            // padding: "24px",
+            position: "relative",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+          }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              style={{
+                position: "absolute",
+                top: "8px",
+                right: "12px",
+                background: "none",
+                border: "none",
+                fontSize: "32px",
+                cursor: "pointer",
+              }}
+              onClick={() => setShowChat(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <ChatWindow
+             currentUserId={userId}
+              selectedUserId={selectedUserId}
+              setSelectedUser={setSelectedUserId}
+            />
+          </div>
       </div>
+         )}
+        </div>
     </nav>
   );
 }
