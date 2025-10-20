@@ -21,8 +21,9 @@ const Matches = () => {
   // Handle mode change
   const handleModeChange = (e) => {
     setMode(e.target.value);
-    if(e.target.value === "camera") { startCamera(); }
-    else {
+    if (e.target.value === "camera") {
+      startCamera();
+    } else {
       // Reset camera if switching to upload
       setCameraActive(false);
       if (videoRef.current && videoRef.current.srcObject) {
@@ -138,182 +139,224 @@ const Matches = () => {
   }, []);
 
   return (
-    <div className="app" style={{ minHeight: "100vh", width: "100vw" }}>
-      {/* Navbar */}
-      <Navbar />
-
+    <div>
       <section className="carousel-section">
-        <div style={{
-          background: "linear-gradient(4deg, black, #710707)",
-          borderRadius: "8px",
-          height: "400px",
-          width: "100vw",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "space-around",
-          padding: "36px 100px",
-          margin: "10px 0px",
-        }}>
-          <h1 style={{ color: "white", fontSize: "2.6rem", fontWeight: "800", marginBottom: 24 }}>
+        <div
+          style={{
+            background: "linear-gradient(4deg, black, #710707)",
+            borderRadius: "8px",
+            height: "400px",
+            width: "100vw",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-around",
+            padding: "36px 100px",
+            margin: "10px 0px",
+          }}
+        >
+          <h1
+            style={{
+              color: "white",
+              fontSize: "2.6rem",
+              fontWeight: "800",
+              marginBottom: 24,
+            }}
+          >
             Face Match Results
           </h1>
-          <h3 style={{ fontSize: "1.4rem", color: "white", fontWeight: "400", marginBottom: 16 }}>
-            Upload a photo or use your camera to scan and find possible matches from our database.
+          <h3
+            style={{
+              fontSize: "1.4rem",
+              color: "white",
+              fontWeight: "400",
+              marginBottom: 16,
+            }}
+          >
+            Upload a photo or use your camera to scan and find possible matches
+            from our database.
           </h3>
           <p style={{ fontSize: "1.1rem", color: "white", fontWeight: "300" }}>
-            Our AI-powered system compares your image with all stored cases and shows the best and similar matches.
-            Please use clear, front-facing photos for accurate results.
+            Our AI-powered system compares your image with all stored cases and
+            shows the best and similar matches. Please use clear, front-facing
+            photos for accurate results.
           </p>
         </div>
       </section>
 
       {/* Radio buttons for mode selection */}
-      
 
       {/* Upload Mode */}
-    
-        <section
-          className="uploader glass"
+
+      <section
+        className="uploader glass"
+        style={{
+          background: "rgba(255,255,255,0.97)",
+          borderRadius: "18px",
+          margin: "30px auto",
+          maxWidth: "500px",
+          padding: "25px",
+          textAlign: "center",
+          boxShadow: "0 4px 24px 0 rgba(31, 38, 135, 0.10)",
+        }}
+      >
+        <h2
           style={{
-            background: "rgba(255,255,255,0.97)",
-            borderRadius: "18px",
-            margin: "30px auto",
-            maxWidth: "500px",
-            padding: "25px",
-            textAlign: "center",
-            boxShadow: "0 4px 24px 0 rgba(31, 38, 135, 0.10)",
+            fontSize: "1.8rem",
+            color: "black",
+            fontWeight: "500",
+            marginBottom: 16,
           }}
         >
-          <h2 style={{ fontSize: "1.8rem", color: "black", fontWeight: "500", marginBottom: 16 }}>Face Scanning</h2>
-          <section style={{ textAlign: "center", margin: "24px 0" }}>
-        <label style={{ marginRight: "24px", fontSize: "1.1rem" ,color:"black"}}>
-          <input
-            type="radio"
-            value="upload"
-            checked={mode === "upload"}
-            onChange={handleModeChange}
-            style={{ marginRight: "8px" }}
-          />
-          Upload
-        </label>
-        <label style={{ fontSize: "1.1rem",color:"black" }}>
-          <input
-            type="radio"
-            value="camera"
-            checked={mode === "camera"}
-            onChange={handleModeChange}
-            style={{ marginRight: "8px" }}
-          />
-          Camera
-        </label>
-      </section>
-            {mode === "upload" ? (<><input type="file" accept="image/*" onChange={handleScanImageChange} style={{    width: 360,
-    height: 45,
-    fontSize: 16,
-    color: "black"}}
-            />
-          {scanPreview && (
-            <div className="preview" style={{ marginTop: "15px" }}>
-              <img
-                src={scanPreview}
-                alt="Scan"
-                style={{
-                  width: "140px",
-                  height: "140px",
-                  borderRadius: "12px",
-                  border: "2px solid #4a90e2",
-                }}
-              />
-            </div>
-          )}
-          <button
-            onClick={handleScanMatch}
-            disabled={scanLoading}
-            className="upload-btn"
-            style={{ marginTop: "15px", width: "80%",
-                background: "#4a90e2",
-                color: "#fff",
-                border: "none",
-                borderRadius: "6px",
-                marginTop:"6px",
-                height:"40px",
-                padding: "8px 20px",
-                fontSize: "1rem",
-                cursor: "pointer",
-              }} 
+          Face Scanning
+        </h2>
+        <section style={{ textAlign: "center", margin: "24px 0" }}>
+          <label
+            style={{ marginRight: "24px", fontSize: "1.1rem", color: "black" }}
           >
-            {scanLoading ? "Scanning..." : "Scan & Find Match"}
-          </button>
-            </>):(
-            <>
-            {cameraActive && <>
-              <div style={{ margin: "20px 0", position: "relative" }}>
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  width={220}
-                  height={180}
+            <input
+              type="radio"
+              value="upload"
+              checked={mode === "upload"}
+              onChange={handleModeChange}
+              style={{ marginRight: "8px" }}
+            />
+            Upload
+          </label>
+          <label style={{ fontSize: "1.1rem", color: "black" }}>
+            <input
+              type="radio"
+              value="camera"
+              checked={mode === "camera"}
+              onChange={handleModeChange}
+              style={{ marginRight: "8px" }}
+            />
+            Camera
+          </label>
+        </section>
+        {mode === "upload" ? (
+          <>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleScanImageChange}
+              style={{ width: 360, height: 45, fontSize: 16, color: "black" }}
+            />
+            {scanPreview && (
+              <div className="preview" style={{ marginTop: "15px" }}>
+                <img
+                  src={scanPreview}
+                  alt="Scan"
                   style={{
+                    width: "140px",
+                    height: "140px",
                     borderRadius: "12px",
                     border: "2px solid #4a90e2",
-                    boxShadow: "0 0 16px #4a90e2",
-                    background: "#e3eafc",
                   }}
                 />
-                <canvas ref={canvasRef} style={{ display: "none" }} />
               </div>
-              <button
-                onClick={captureFromCamera}
-                className="upload-btn"
-                style={{ marginBottom: "15px", width: "80%" }}
-              >
-                Capture Photo
-              </button>
-              </>}
-              {scanPreview && (
-                <div className="preview" style={{ marginTop: "15px" }}>
-                  <img
-                    src={scanPreview}
-                    alt="Camera Capture"
-                    style={{
-                      width: "140px",
-                      height: "140px",
-                      borderRadius: "12px",
-                      border: "2px solid #4a90e2",
-                    }}
-                  />
-                </div>
-              )}
-              <button
-                onClick={handleScanMatch}
-                disabled={scanLoading}
-                className="upload-btn"
-                 style={{ marginTop: "15px", width: "80%",
+            )}
+            <button
+              onClick={handleScanMatch}
+              disabled={scanLoading}
+              className="upload-btn"
+              style={{
+                marginTop: "15px",
+                width: "80%",
                 background: "#4a90e2",
                 color: "#fff",
                 border: "none",
                 borderRadius: "6px",
-                marginTop:"6px",
-                height:"40px",
+                marginTop: "6px",
+                height: "40px",
                 padding: "8px 20px",
                 fontSize: "1rem",
                 cursor: "pointer",
-              }} 
-              >
-                {scanLoading ? "Scanning..." : "Scan & Find Match"}
-              </button>
-            </>
-          )}
-        </section>
-
-     
+              }}
+            >
+              {scanLoading ? "Scanning..." : "Scan & Find Match"}
+            </button>
+          </>
+        ) : (
+          <>
+            {cameraActive && (
+              <>
+                <div style={{ margin: "20px 0", position: "relative" }}>
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    width={220}
+                    height={180}
+                    style={{
+                      borderRadius: "12px",
+                      border: "2px solid #4a90e2",
+                      boxShadow: "0 0 16px #4a90e2",
+                      background: "#e3eafc",
+                    }}
+                  />
+                  <canvas ref={canvasRef} style={{ display: "none" }} />
+                </div>
+                <button
+                  onClick={captureFromCamera}
+                  className="upload-btn"
+                  style={{ marginBottom: "15px", width: "80%" }}
+                >
+                  Capture Photo
+                </button>
+              </>
+            )}
+            {scanPreview && (
+              <div className="preview" style={{ marginTop: "15px" }}>
+                <img
+                  src={scanPreview}
+                  alt="Camera Capture"
+                  style={{
+                    width: "140px",
+                    height: "140px",
+                    borderRadius: "12px",
+                    border: "2px solid #4a90e2",
+                  }}
+                />
+              </div>
+            )}
+            <button
+              onClick={handleScanMatch}
+              disabled={scanLoading}
+              className="upload-btn"
+              style={{
+                marginTop: "15px",
+                width: "80%",
+                background: "#4a90e2",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                marginTop: "6px",
+                height: "40px",
+                padding: "8px 20px",
+                fontSize: "1rem",
+                cursor: "pointer",
+              }}
+            >
+              {scanLoading ? "Scanning..." : "Scan & Find Match"}
+            </button>
+          </>
+        )}
+      </section>
 
       {/* Display Best Match */}
       {bestMatch && (
         <section style={{ maxWidth: "600px", margin: "30px auto" }}>
-          <h2 style={{ fontSize: "1.8rem", fontWeight: "500", marginTop: 48,color:"black" }}>Best Match</h2>
+          <h2
+            style={{
+              fontSize: "1.8rem",
+              fontWeight: "500",
+              marginTop: 48,
+              color: "black",
+            }}
+          >
+            Best Match
+          </h2>
           <div
             style={{
               marginTop: "10px",
@@ -335,13 +378,27 @@ const Matches = () => {
                 border: "2px solid #4a90e2",
                 marginBottom: "10px",
                 objectFit: "cover",
-      
               }}
             />
-            <div style={{color:"black"}}>
-              <p style={{ fontSize: "1.2rem", fontWeight: "300",marginTop:12 }}><strong>Description:</strong> {bestMatch.description}</p>
-              <p style={{ fontSize: "1.2rem", fontWeight: "300",marginTop:12 }}><strong>Reward:</strong> ₹{bestMatch.reward}</p>
-              <p style={{ fontSize: "1.2rem", fontWeight: "300",marginTop:12,color:"#4a90e2" }}>
+            <div style={{ color: "black" }}>
+              <p
+                style={{ fontSize: "1.2rem", fontWeight: "300", marginTop: 12 }}
+              >
+                <strong>Description:</strong> {bestMatch.description}
+              </p>
+              <p
+                style={{ fontSize: "1.2rem", fontWeight: "300", marginTop: 12 }}
+              >
+                <strong>Reward:</strong> ₹{bestMatch.reward}
+              </p>
+              <p
+                style={{
+                  fontSize: "1.2rem",
+                  fontWeight: "300",
+                  marginTop: 12,
+                  color: "#4a90e2",
+                }}
+              >
                 <strong>Similarity:</strong> {bestMatch.similarity}%
               </p>
             </div>
@@ -349,11 +406,26 @@ const Matches = () => {
         </section>
       )}
 
-      <hr style={{ maxWidth: "900px", margin: "30px auto", border: "1px solid black" }} />
+      <hr
+        style={{
+          maxWidth: "900px",
+          margin: "30px auto",
+          border: "1px solid black",
+        }}
+      />
       {/* Display All Matches */}
       {allMatches.length > 0 && (
         <section style={{ maxWidth: "900px", margin: "30px auto" }}>
-          <h2 style={{ fontSize: "1.8rem", fontWeight: "500", marginTop: 48,color:"black" }}>All Matches</h2>
+          <h2
+            style={{
+              fontSize: "1.8rem",
+              fontWeight: "500",
+              marginTop: 48,
+              color: "black",
+            }}
+          >
+            All Matches
+          </h2>
           <div className="gallery-grid">
             {allMatches.map((match, idx) => (
               <div
@@ -382,14 +454,39 @@ const Matches = () => {
                     borderBottom: "1px solid #eee",
                   }}
                 />
-                <div className="gallery-info" style={{ padding: "12px", width: "100%" }}>
-                  <p className="gallery-desc" style={{ margin: "0 0 8px 0", fontSize: "1.2rem", color: "black",fontWeight:"300" }}>
+                <div
+                  className="gallery-info"
+                  style={{ padding: "12px", width: "100%" }}
+                >
+                  <p
+                    className="gallery-desc"
+                    style={{
+                      margin: "0 0 8px 0",
+                      fontSize: "1.2rem",
+                      color: "black",
+                      fontWeight: "300",
+                    }}
+                  >
                     {match.description}
                   </p>
-                  <span className="gallery-reward" style={{  fontSize: "1.2rem", color: "black",fontWeight:"300"  }}>
+                  <span
+                    className="gallery-reward"
+                    style={{
+                      fontSize: "1.2rem",
+                      color: "black",
+                      fontWeight: "300",
+                    }}
+                  >
                     Reward: ₹{match.reward}
                   </span>
-                  <div style={{ marginTop: "6px", color: "#4a90e2" ,fontSize: "1.2rem",fontWeight:"300"}}>
+                  <div
+                    style={{
+                      marginTop: "6px",
+                      color: "#4a90e2",
+                      fontSize: "1.2rem",
+                      fontWeight: "300",
+                    }}
+                  >
                     Similarity: {match.similarity}%
                   </div>
                 </div>
@@ -400,7 +497,7 @@ const Matches = () => {
       )}
 
       {/* No matches found */}
-      {!scanLoading && !bestMatch && scanPreview  &&(
+      {!scanLoading && !bestMatch && scanPreview && (
         <p style={{ marginTop: "20px", color: "#888", textAlign: "center" }}>
           No match found in database.
         </p>

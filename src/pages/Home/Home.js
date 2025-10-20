@@ -9,6 +9,7 @@ import Component3 from "../../components/ImageCarousel/Component3";
 import Component4 from "../../components/ImageCarousel/Component4";
 import Gallery from "../../components/Gallery/Gallery";
 import Navbar from "../../components/Navbar";
+import TableView from "../../components/TableView";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Home = () => {
   const [showCommentBox, setShowCommentBox] = useState({});
   const [comments, setComments] = useState({});
   const [commentInput, setCommentInput] = useState({});
+  const [activeTab, setActiveTab] = useState("gallery");
 
   const handleLike = (index) => {
     setLikes((prev) => ({
@@ -61,35 +63,57 @@ const Home = () => {
         })
         .catch((err) => console.log("Share failed:", err));
     } else {
-      alert("Sharing not supported on this browser. Copy link: " + window.location.href);
+      alert(
+        "Sharing not supported on this browser. Copy link: " +
+          window.location.href
+      );
     }
   };
 
   return (
-    <div className="app" style={{ minHeight: "100vh", width: "100vw" }}>
-      {/* Navbar */}
-      <Navbar/>
-
-      {/* Hero Section */}
-      {/* <header className="app-header">
-        <h1>AI Missing Person Matcher</h1>
-        <p>
-          A collaborative platform for families, law enforcement, and the public
-          to help identify and reunite missing persons.
-        </p>
-      </header> */}
-
-      {/* Uploaded Posts */}
+    <div>
       <section className="carousel-section">
-        
-          <ImageCarousel images={[<Component1/>,<Component2/>,<Component3/>,<Component4/>]} />
-        
+        <ImageCarousel
+          images={[
+            <Component1 />,
+            <Component2 />,
+            <Component3 />,
+            <Component4 />,
+          ]}
+        />
       </section>
-      <section>{<Gallery/>}</section>
-      
-      
+      <section><div style={{ display: "flex", justifyContent: "center", margin: "24px 0 8px 0" }}>
+        <button
+          onClick={() => setActiveTab("gallery")}
+          style={{
+            padding: "10px 32px",
+            marginRight: "8px",
+            borderRadius: "6px 0 0 6px",
+            border: activeTab === "gallery" ? "2px solid #007bff" : "1px solid #ccc",
+            background: activeTab === "gallery" ? "#eaf4ff" : "#fff",
+            fontWeight: activeTab === "gallery" ? "bold" : "normal",
+            cursor: "pointer"
+          }}
+        >
+          Gallery View
+        </button>
+        <button onClick={() => setActiveTab("table")}
+          style={{
+            padding: "10px 32px",
+            borderRadius: "0 6px 6px 0",
+            border: activeTab === "table" ? "2px solid #007bff" : "1px solid #ccc",
+            background: activeTab === "table" ? "#eaf4ff" : "#fff",
+            fontWeight: activeTab === "table" ? "bold" : "normal",
+            cursor: "pointer"
+          }}
+        >
+          Table View
+        </button>
+      </div>
+      <section>
+        {activeTab === "gallery" ? <Gallery /> : <TableView />}
+      </section></section>
     </div>
-    
   );
 };
 

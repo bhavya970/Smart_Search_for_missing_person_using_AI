@@ -5,15 +5,6 @@ body {
 }
 
 /* Navbar */
-.navbar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* background-color: #ec7272; */
-  padding: 10px 20px;
-  /* color: #fff; */
-  height: 100px;
-}
 
 .navbar ul {
   display: flex;
@@ -26,6 +17,11 @@ body {
   margin: 0 15px;
   cursor: pointer;
   font-size: 18px;
+  color: #fff;
+  font-family: cursive;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 24px;
   /* color: #fff; */
 }
 
@@ -122,7 +118,7 @@ body {
   border-radius: 6px;
   border: 1px solid #ccc;
   margin-bottom: 8px;
-  color:red;
+  color: red;
 }
 .comment-box button {
   padding: 6px 12px;
@@ -138,9 +134,9 @@ body {
 }
 .comment {
   margin-top: 6px;
-  font-size: 18px;     /* bigger text */
-  text-align: left;   /* align text to right */
-  margin-right: 10px; 
+  font-size: 18px; /* bigger text */
+  text-align: left; /* align text to right */
+  margin-right: 10px;
   color: black;
   background: #f1f1f1;
   padding: 6px 10px;
@@ -177,5 +173,3 @@ body {
 .reward-badge.high {
   background: #e63946; /* Red for high rewards */
 }
-
-

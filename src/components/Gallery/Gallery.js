@@ -10,7 +10,7 @@ const Gallery = () => {
   const [commentInput, setCommentInput] = useState({});
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/cases")
+    fetch(`http://localhost:5000/api/cases/${sessionStorage.getItem("userId")}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("fetched cases", data);

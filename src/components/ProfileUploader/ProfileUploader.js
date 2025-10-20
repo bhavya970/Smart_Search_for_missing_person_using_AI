@@ -15,9 +15,8 @@ const ProfileUploader = ({ setFile, file }) => {
       console.log(reader.result);
       reader.onload = () => {
         setImage(reader.result);
+        sessionStorage.setItem("profilePhoto", reader.result);
         // setFile(reader.result);
-        console.log(reader.result);
-        // setFile(file); // Pass the file back to parent component
       };
       reader.readAsDataURL(file);
     }
@@ -26,7 +25,7 @@ const ProfileUploader = ({ setFile, file }) => {
   return (
     <div className="profile-container">
       <div className="profile-wrapper">
-        {!image && !file ? (
+        {(!image && !file) || file === "undefined" ? (
           <>
             <label htmlFor="fileInput" className="upload-btn">
               <FaUserLarge
@@ -45,7 +44,7 @@ const ProfileUploader = ({ setFile, file }) => {
           </>
         ) : (
           <img
-            src={file || image}
+            src={image || file}
             alt="Profile"
             className="profile-image"
             style={{ height: "120px", width: "150px", borderRadius: "50%" }}

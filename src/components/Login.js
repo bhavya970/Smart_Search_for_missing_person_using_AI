@@ -39,11 +39,7 @@ function Login() {
       console.log("Login Response:", response.data);
       if (response.status === 200) {
         sessionStorage.clear();
-        sessionStorage.setItem("username", response.data.username);
-        sessionStorage.setItem("email", response.data.email);
         sessionStorage.setItem("userId", response.data._id);
-        sessionStorage.setItem("profilePhoto", response.data.profilePhoto);
-
         setUsername(response.data.username);
 
         setIsLoggedIn(true);

@@ -10,6 +10,33 @@ export default function GalleryCard({ item }) {
   const [likeCount, setLikeCount] = React.useState(item.likeCount || 0);
   const [liked, setLiked] = React.useState(false);
   const [showChat, setShowChat] = React.useState(false);
+  const [otherUserData, setOtherUserData] = React.useState({});
+  const [selectedUserId, setSelectedUserId] = React.useState(
+    item.uploadedUserId
+  );
+  const [showInfoModal, setShowInfoModal] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/user/${item.uploadedUserId}`
+        );
+        if (response.ok) {
+          const userData = await response.json();
+          setOtherUserData(userData);
+        } else {
+          console.error("Failed to fetch user details");
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    if (item.uploadedUserId) {
+      fetchUserDetails();
+    }
+  }, [item.uploadedUserId]);
 
   const handleLike = async () => {
     setLiked(!liked);
@@ -111,11 +138,11 @@ export default function GalleryCard({ item }) {
           <button
             style={{
               position: "absolute",
-              top: "12px",
+              top: "-6px",
               right: "12px",
               background: "none",
               border: "none",
-              fontSize: "20px",
+              fontSize: "45px",
               cursor: "pointer",
             }}
             onClick={() => setShowChat(false)}
@@ -125,10 +152,97 @@ export default function GalleryCard({ item }) {
           </button>
           <ChatWindow
             currentUserId={sessionStorage.getItem("userId")}
-            selectedUser={item}
+            selectedUserId={selectedUserId}
+            setSelectedUser={setSelectedUserId}
+            userData={otherUserData}
           />
         </div>
       </div>
+      {showInfoModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 1001,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowInfoModal(false)}
+        >
+          <div
+            style={{
+              background: "white",
+              borderRadius: "8px",
+              maxWidth: "400px",
+              width: "90%",
+              padding: "24px",
+              position: "relative",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              style={{
+                position: "absolute",
+                top: "8px",
+                right: "12px",
+                background: "none",
+                border: "none",
+                fontSize: "32px",
+                cursor: "pointer",
+              }}
+              onClick={() => setShowInfoModal(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h2 style={{ textAlign: "center", marginBottom: "16px" }}>
+              Missing Person Details
+            </h2>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            >
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                style={{
+                  width: "100%",
+                  height: "200px",
+                  objectFit: "cover",
+                  borderRadius: "6px",
+                  marginBottom: "12px",
+                }}
+              />
+              <div>
+                <strong>Name:</strong> {item.name}
+              </div>
+              <div>
+                <strong>Age:</strong> {item.age}
+              </div>
+              <div>
+                <strong>Gender:</strong> {item.gender}
+              </div>
+              <div>
+                <strong>Contact Email:</strong> {otherUserData.email || "N/A"}
+              </div>
+              <div>
+                <strong>Address:</strong> {item.address || "N/A"}
+              </div>
+              <div>
+                <strong>Description:</strong> {item.description || "N/A"}
+              </div>
+              <div>
+                <strong>Reward:</strong> ₹{item.reward}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div key={item._id} style={styles.containerStyle}>
         <div className="uploader-section" style={styles.uploaderSection}>
           <div
@@ -138,9 +252,10 @@ export default function GalleryCard({ item }) {
               gap: "5px",
             }}
           >
-            {item?.profilePhoto && item?.profilePhoto !== "undefined" ? (
+            {otherUserData?.profilePhoto &&
+            otherUserData?.profilePhoto !== "undefined" ? (
               <img
-                src={item.profilePhoto}
+                src={otherUserData.profilePhoto}
                 alt="Uploader"
                 className="uploader-avatar"
                 onError={(e) => {
@@ -164,7 +279,7 @@ export default function GalleryCard({ item }) {
                   textAlign: "center",
                 }}
               >
-                {(item.savedUserName || "U")
+                {(otherUserData.username || "U")
                   .split(" ")
                   .map((n) => n[0])
                   .join("")
@@ -178,7 +293,7 @@ export default function GalleryCard({ item }) {
                 fontStyle: "italic",
               }}
             >
-              {item.savedUserName}
+              {otherUserData.username}
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
@@ -217,6 +332,7 @@ export default function GalleryCard({ item }) {
             <FiInfo
               title="More info"
               style={{ height: "24px", width: "24px", cursor: "pointer" }}
+              onClick={() => setShowInfoModal(true)}
             />
           </div>
         </div>

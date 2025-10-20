@@ -8,14 +8,19 @@ function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
 
+  const userId = sessionStorage.getItem("userId");
   useEffect(() => {
-    const savedUser = {
-      username: sessionStorage.getItem("username"),
-      email: sessionStorage.getItem("email"),
-      profilePhoto: sessionStorage.getItem("profilePhoto"),
-    };
-    console.log("Saved User from sessionStorage:", savedUser);
-    if (savedUser) setUser(savedUser);
+      if (userId) {
+        fetch(`http://localhost:5000/api/user/${userId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("Fetched user details:", data);
+            setUser(data);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch user details:", err);
+          });
+      }
 
     // Dynamically load Google Translate script
     const addGoogleTranslateScript = () => {
@@ -28,26 +33,58 @@ function Navbar() {
 
       window.googleTranslateElementInit = () => {
         new window.google.translate.TranslateElement(
-          { pageLanguage: "en" },
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,ta,te,kn,ml,bn,gu,mr,pa,ur",
+            layout:
+              window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
           "google_translate_element"
         );
+        // Hide "Powered by Google Translate" text
+        const hideGoogleBranding = () => {
+          const branding = document.querySelector(".goog-logo-link");
+          if (branding) branding.style.display = "none";
+          const poweredBy = document.querySelector(".goog-te-gadget");
+          if (poweredBy)
+            poweredBy.childNodes.forEach((node) => {
+              if (
+                node.nodeType === 3 &&
+                node.textContent.includes("Powered by")
+              ) {
+                node.textContent = "";
+              }
+            });
+        };
+        setTimeout(hideGoogleBranding, 1000);
       };
     };
 
     if (!window.googleTranslateElementInit) addGoogleTranslateScript();
-  }, []);
+  }, [userId]);
 
   const getInitial = (name) =>
-    name ? sessionStorage.getItem("username").charAt(0).toUpperCase() : "U";
+    name ? user?.username.charAt(0).toUpperCase() : "U";
   return (
-    <nav className="navbar" style={{ marginBottom: "0" }}>
+    <nav
+      className="navbar"
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(52, 47, 47, 0.7)",
+        padding: "10px 20px",
+        height: "100px",
+      }}
+    >
       <ul>
         <li onClick={() => navigate("/home")}>Home</li>
         <li onClick={() => navigate("/about")}>About</li>
         <li onClick={() => navigate("/upload")}>Upload</li>
         <li onClick={() => navigate("/matches")}>Matches</li>
         <li onClick={() => navigate("/faqs")}>Faqs</li>
-        <li>
+        <li style={{ textAlign: "center", alignSelf: "center" }}>
           <div id="google_translate_element" className="custom-translate"></div>
         </li>
       </ul>
@@ -60,7 +97,7 @@ function Navbar() {
         }}
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
-        {user?.profilePhoto && !user?.profilePhoto === "undefined" ? (
+        {user?.profilePhoto && user?.profilePhoto !== "undefined" ? (
           <img
             src={user?.profilePhoto}
             alt="User"

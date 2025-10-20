@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import "./../pages/Home/Home.css";
 import ProfileUploader from "./ProfileUploader/ProfileUploader";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ const Profile = () => {
   });
   const [user, setUser] = useState(null);
   const [file, setFile] = useState(null);
+  const userId = sessionStorage.getItem("userId");
+  const navigate=useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +56,7 @@ const Profile = () => {
     if (result.success) {
       const data = result.user;
       setUser(data);
+      navigate("/home")
       sessionStorage.setItem("profilePhoto", data.profilePhoto);
     } else {
       console.error("Error updating profile:", response.message);
@@ -61,19 +65,21 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const savedUser = {
-      username: sessionStorage.getItem("username"),
-      email: sessionStorage.getItem("email"),
-      profilePhoto: sessionStorage.getItem("profilePhoto"),
-    };
-
-    if (savedUser?.profilePhoto) setFile(savedUser.profilePhoto);
-    if (savedUser) setUser(savedUser);
-  }, []);
+    if (userId) {
+      fetch(`http://localhost:5000/api/user/${userId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.profilePhoto) setFile(data.profilePhoto);
+          setUser(data);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch user details:", err);
+        });
+    }
+  }, [userId]);
 
   return (
-    <div className="app" style={{ minHeight: "100vh", width: "100vw" }}>
-      <Navbar />
+    <div>
       <section className="details-section">
         <div
           style={{

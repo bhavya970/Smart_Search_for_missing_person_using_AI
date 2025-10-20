@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Home.css";
-import Gallery from "./Gallery/Gallery";
-import Navbar from "./Navbar";
+import "./../../components/Home.css";
 
 const styles = {
   inputButtonStyle: {
@@ -108,17 +106,7 @@ const Upload = () => {
     formData.append("city", formState.city);
     formData.append("postalCode", formState.postalCode);
     formData.append("state", formState.state);
-    formData.append("uploadedUser", sessionStorage.getItem("userId") || null);
-    formData.append("email", sessionStorage.getItem("email") || null);
-    formData.append("phoneNumber", sessionStorage.getItem("userId") || null);
-    formData.append(
-      "profilePhoto",
-      sessionStorage.getItem("profilePhoto") || null
-    );
-    formData.append(
-      "savedUserName",
-      sessionStorage.getItem("username") || null
-    );
+    formData.append("uploadedUserId", sessionStorage.getItem("userId") || null);
 
     try {
       const response = await fetch("http://localhost:5000/api/upload", {
@@ -143,10 +131,7 @@ const Upload = () => {
   };
 
   return (
-    <div className="app" style={{ minHeight: "100vh", width: "100vw" }}>
-      {/* Navbar */}
-      <Navbar />
-
+    <div>
       <section className="carousel-section">
         <div
           style={{
