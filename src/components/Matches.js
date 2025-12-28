@@ -112,6 +112,7 @@ const Matches = () => {
       const data = await response.json();
       if (data.matches && data.matches.length > 0) {
         setAllMatches(data.matches);
+        console.log("best match", data.bestMatch);
         setBestMatch(data.bestMatch || data.matches[0]);
       } else if (data.match) {
         setBestMatch(data.match);
@@ -137,6 +138,30 @@ const Matches = () => {
       }
     };
   }, []);
+
+  React.useEffect(() => {
+    // Only run if bestMatch is set and similarity > 50
+    console.log("Best match updated:", bestMatch?._doc?.uploadedUserId);
+    if (bestMatch && bestMatch.similarity > 50 && bestMatch?._doc?.uploadedUserId) {
+      fetch(`http://localhost:5000/api/user/${bestMatch?._doc?.uploadedUserId}`)
+        .then((res) => res.json())
+        .then((user) => {
+          if (user && user.email) {
+            // Call backend to send email
+            console.log("Sending email to:", user.email);
+            fetch("http://localhost:5000/api/send-email", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                to: user.email,
+                subject: "Face Match Alert",
+                text: `A new face match with ${bestMatch.similarity}% similarity was found for your uploaded image (${bestMatch.description}). Please check the platform for details.`,
+              }),
+            });
+          }
+        });
+    }
+  }, [bestMatch]);
 
   return (
     <div>

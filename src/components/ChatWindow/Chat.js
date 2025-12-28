@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
+import { MdLocationOn } from "react-icons/md";
+import { MdAttachFile } from "react-icons/md";
 
 const socket = io("http://localhost:5000", {
   transports: ["websocket", "polling"],
@@ -33,12 +35,31 @@ const styles = {
     fontSize: "16px",
   },
   inputButtonStyle: {
-    width: "43vw",
+    width: "38vw",
     padding: "10px",
     borderRadius: "32px",
     height: "32px",
     fontSize: "14px",
     border: "2px solid black",
+  },
+  locationBubble: {
+    backgroundColor: "#d4f4ee",
+    padding: "12px 16px",
+    borderRadius: "12px",
+    marginTop: "4px",
+    cursor: "pointer",
+    border: "1px solid #4a90a4",
+  },
+  fileBubble: {
+    backgroundColor: "#fff3cd",
+    padding: "12px 16px",
+    borderRadius: "12px",
+    marginTop: "4px",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    cursor: "pointer",
+    border: "1px solid #ffc107",
   },
 };
 
@@ -51,8 +72,8 @@ export default function ChatWindow({
   const [messages, setMessages] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [userData, setUserData] = useState({});
-
   const [searchText, setSearchText] = useState("");
+  const messagesEndRef = useRef(null);
 
   // Fetch chat contacts
   useEffect(() => {
@@ -107,6 +128,12 @@ export default function ChatWindow({
     return () => socket.off("receiveMessage");
   }, []);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, selectedUserId]);
+
   const sendMessage = () => {
     if (!message.trim()) return;
 
@@ -114,10 +141,85 @@ export default function ChatWindow({
       senderId: currentUserId,
       receiverId: selectedUserId,
       message,
+      type: "text",
     });
 
     setMessage("");
   };
+
+  // Share location
+  const shareLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const locationMessage = {
+          latitude,
+          longitude,
+          address: `Lat: ${latitude.toFixed(4)}, Long: ${longitude.toFixed(4)}`,
+
+        };
+
+        socket.emit("sendMessage", {
+          senderId: currentUserId,
+          receiverId: selectedUserId,
+          message: JSON.stringify(locationMessage),
+          type: "location",
+        });
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        alert("Unable to get your location. Please check permissions.");
+      }
+    );
+  };
+
+const handleFileShare = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 10 * 1024 * 1024) {
+    alert("File size exceeds 10MB limit");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/upload-file",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    const fileData = {
+      fileName: file.name,
+      fileUrl: response.data.url, // <-- FIXED: use 'url' from backend
+      fileSize: (file.size / 1024).toFixed(2) + " KB",
+    };
+
+    socket.emit("sendMessage", {
+      senderId: currentUserId,
+      receiverId: selectedUserId,
+      message: JSON.stringify(fileData),
+      type: "file",
+    });
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    alert("Failed to upload file");
+  }
+
+  event.target.value = "";
+};
 
   const lastMessageTime = (time) => {
     const date = new Date(time);
@@ -143,7 +245,6 @@ export default function ChatWindow({
       date > weekStart && date < now && !isToday && !isYesterday;
 
     if (isToday) {
-      // ✅ 12-hour format with AM/PM
       return date.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -165,6 +266,116 @@ export default function ChatWindow({
       });
     }
   };
+
+const renderMessage = (msg) => {
+  // 1. Detect location message
+  if (
+    msg.location ||
+    (typeof msg.message === "string" &&
+      (() => {
+        try {
+          const obj = JSON.parse(msg.message);
+          return obj && typeof obj === "object" && "latitude" in obj && "longitude" in obj;
+        } catch {
+          return false;
+        }
+      })())
+  ) {
+    let location = msg.location;
+    if (!location) {
+      try {
+        location = JSON.parse(msg.message);
+      } catch {
+        return <span>{msg.message}</span>;
+      }
+    }
+    const mapUrl = `https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${location.longitude},${location.latitude}&z=15&size=300,150&l=map&pt=${location.longitude},${location.latitude},pm2rdm`;
+    return (
+      <div
+        style={styles.locationBubble}
+        onClick={() =>
+          window.open(
+            `https://maps.google.com/?q=${location.latitude},${location.longitude}`,
+            "_blank"
+          )
+        }
+        title="Click to open in Google Maps"
+      >
+        <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
+          <MdLocationOn style={{ marginRight: "8px", verticalAlign: "middle" }} />
+          <span>
+            📍 {location.address || `Lat: ${location.latitude}, Long: ${location.longitude}`}
+          </span>
+        </div>
+        <img
+          src={mapUrl}
+          alt="Location preview"
+          style={{ width: "100%", borderRadius: "8px", cursor: "pointer" }}
+        />
+      </div>
+    );
+  }
+
+  // 2. Detect file message (handles both with and without fileUrl)
+  if (
+    msg.fileName ||
+    (typeof msg.message === "string" &&
+      (() => {
+        try {
+          const obj = JSON.parse(msg.message);
+          return obj && typeof obj === "object" && "fileName" in obj;
+        } catch {
+          return false;
+        }
+      })())
+  ) {
+    let fileData = msg;
+    if (!msg.fileName) {
+      try {
+        fileData = JSON.parse(msg.message);
+      } catch {
+        return <span>{msg.message}</span>;
+      }
+    }
+    // If fileUrl is present, show as a link, else just show file info
+    return fileData.fileUrl ? (
+      <a
+        href={fileData.fileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ textDecoration: "none", color: "inherit" }}
+        download
+      >
+        <div style={styles.fileBubble}>
+          <MdAttachFile style={{ fontSize: "20px", flexShrink: 0 }} />
+          <div style={{ overflow: "hidden" }}>
+            <div style={{ fontWeight: "600", wordBreak: "break-word" }}>
+              {fileData.fileName}
+            </div>
+            <div style={{ fontSize: "12px", color: "#666" }}>
+              {fileData.fileSize || fileData.fileType || ""}
+            </div>
+          </div>
+        </div>
+      </a>
+    ) : (
+      <div style={styles.fileBubble}>
+        <MdAttachFile style={{ fontSize: "20px", flexShrink: 0 }} />
+        <div style={{ overflow: "hidden" }}>
+          <div style={{ fontWeight: "600", wordBreak: "break-word" }}>
+            {fileData.fileName}
+          </div>
+          <div style={{ fontSize: "12px", color: "#666" }}>
+            {fileData.fileSize || fileData.fileType || ""}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Default: text message
+  return <span>{msg.message}</span>;
+};
 
   return (
     <div style={{ display: "flex", height: "100%" }}>
@@ -190,8 +401,7 @@ export default function ChatWindow({
         <div style={{ margin: "0px auto 8px 6px", position: "relative" }}>
           <input
             style={{
-              // width: "100%",
-              padding: "10px 36px 10px 16px", // space for icon
+              padding: "10px 36px 10px 16px",
               borderRadius: "16px",
               border: "1.2px solid black",
               height: "40px",
@@ -301,7 +511,7 @@ export default function ChatWindow({
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    maxWidth: "140px", // ad
+                    maxWidth: "140px",
                   }}
                 >
                   {contact.lastMessage}
@@ -402,7 +612,8 @@ export default function ChatWindow({
           </div>
         </div>
         <div
-          style={{ display: "flex", flexDirection: "column", margin: "16px" }}
+          style={{ display: "flex", flexDirection: "column", margin: "16px",height:"67%",overflowY:"auto" }}
+          ref={messagesEndRef}
         >
           {messages.map((msg, i) => (
             <div
@@ -422,7 +633,7 @@ export default function ChatWindow({
                     : styles.senderStyle
                 }
               >
-                {msg.message}
+                {renderMessage(msg)}
               </div>
               <span
                 style={{
@@ -457,6 +668,36 @@ export default function ChatWindow({
                 sendMessage();
               }
             }}
+          />
+          <button
+            onClick={shareLocation}
+            title="Share Location"
+            style={{
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              padding: "4px",
+            }}
+          >
+            <MdLocationOn style={{ height: "24px", width: "24px", color: "#d4a574" }} />
+          </button>
+          <button
+            onClick={() => document.getElementById("fileInput").click()}
+            title="Share File"
+            style={{
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              padding: "4px",
+            }}
+          >
+            <MdAttachFile style={{ height: "24px", width: "24px", color: "#ffc107" }} />
+          </button>
+          <input
+            id="fileInput"
+            type="file"
+            onChange={handleFileShare}
+            style={{ display: "none" }}
           />
           <button
             onClick={sendMessage}

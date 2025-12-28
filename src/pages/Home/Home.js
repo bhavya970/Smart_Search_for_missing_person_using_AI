@@ -130,6 +130,7 @@ import Component4 from "../../components/ImageCarousel/Component4";
 import Gallery from "../../components/Gallery/Gallery";
 import Navbar from "../../components/Navbar";
 import TableView from "../../components/TableView";
+import MyUploads from "../../components/Gallery/MyUploads";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -229,9 +230,28 @@ const Home = () => {
         >
           Table View
         </button>
+        <button
+          onClick={() => setActiveTab("uploads")}
+          style={{
+            padding: "10px 32px",
+            borderRadius: "0 6px 6px 0",
+            border: activeTab === "uploads" ? "2px solid #007bff" : "1px solid #ccc",
+            background: activeTab === "uploads" ? "#eaf4ff" : "#fff",
+            fontWeight: activeTab === "uploads" ? "bold" : "normal",
+            cursor: "pointer"
+          }}
+        >
+          My Uploads
+        </button>
       </div>
       <section>
-        {activeTab === "gallery" ? <Gallery /> : <TableView />}
+        {activeTab === "gallery" ? (
+          <Gallery />
+        ) : activeTab === "table" ? (
+          <TableView />
+        ) : (
+          <MyUploads />
+        )}
       </section></section>
     </div>
   );
