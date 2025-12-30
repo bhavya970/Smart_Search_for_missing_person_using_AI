@@ -103,7 +103,9 @@ function Navbar() {
         <li onClick={() => navigate("/about")}>About</li>
         <li onClick={() => navigate("/upload")}>Upload</li>
         <li onClick={() => navigate("/matches")}>Matches</li>
+        <li onClick={() => navigate("/ngo-support")}>NGO Support</li>
         <li onClick={() => navigate("/faqs")}>Faqs</li>
+
         <li style={{ textAlign: "center", alignSelf: "center" }}>
           <div id="google_translate_element" className="custom-translate"></div>
         </li>

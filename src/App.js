@@ -11,6 +11,7 @@ import Match from "./components/Matches";
 import Profile from "./components/Profile";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Layout } from "./layout";
+import NGOSupport from "./components/NGOSupport";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="/faqs" element={<Faqs />} />
               <Route path="/logout" element={<Logout />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/ngo-support" element={<NGOSupport />} />
             </Routes>
           </Layout>
         </div>
