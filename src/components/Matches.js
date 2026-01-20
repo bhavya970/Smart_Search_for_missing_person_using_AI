@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Navbar from "./Navbar";
+import GalleryCard from "./Gallery/GalleryCard";
 
 const Matches = () => {
   const [mode, setMode] = useState("upload"); // "camera" or "upload"
@@ -17,6 +18,107 @@ const Matches = () => {
   const canvasRef = useRef(null);
 
   const navigate = useNavigate();
+  const bestMatchRef = useRef(null);
+  const reportRef = useRef(null);
+  const [scanLocation, setScanLocation] = useState(null);
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setScanLocation({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+      },
+      (err) => {
+        console.warn("Location error:", err);
+      },
+      { enableHighAccuracy: true, timeout: 5000 }
+    );
+  };
+
+  // Dynamically load a script by URL
+  const loadScript = (src) =>
+    new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) return resolve();
+      const s = document.createElement("script");
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.body.appendChild(s);
+    });
+
+  const handleDownloadPDF = async () => {
+    // prefer reportRef (full report) if available
+    const targetRef = reportRef.current || bestMatchRef.current;
+    if (!targetRef) return alert("Nothing to download");
+    try {
+      // load libraries from CDN if not present
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+
+      const html2canvas = window.html2canvas;
+      const { jsPDF } = window.jspdf || window.jspdf || (window.jspdf = window.jspdf || {});
+      // html2canvas might be available at window.html2canvas
+      if (!html2canvas || !window.jspdf) {
+        alert("Failed to load PDF libraries");
+        return;
+      }
+
+      const el = targetRef;
+      // hide any anchor tags inside the element so they don't become part of the captured image
+      const anchors = el.querySelectorAll("a");
+      const anchorStyles = [];
+      anchors.forEach((a) => {
+        anchorStyles.push({ el: a, visibility: a.style.visibility || "", display: a.style.display || "" });
+        a.style.visibility = "hidden";
+      });
+
+      const canvas = await html2canvas(el, { useCORS: true, scale: 2, backgroundColor: '#ffffff' });
+
+      // restore anchor styles
+      anchorStyles.forEach(({ el, visibility, display }) => {
+        el.style.visibility = visibility;
+        el.style.display = display;
+      });
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // calculate image dimensions to fit A4 while preserving aspect ratio
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgWidthMm = pageWidth - 20; // 10mm margins
+      const imgHeightMm = (imgProps.height * imgWidthMm) / imgProps.width;
+      let positionY = 10;
+      pdf.addImage(imgData, "PNG", 10, positionY, imgWidthMm, imgHeightMm);
+
+      // If scanLocation available, add a clickable link below the image
+      if (scanLocation && scanLocation.latitude && scanLocation.longitude) {
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${scanLocation.latitude},${scanLocation.longitude}`;
+        const linkX = 10;
+        const linkY = positionY + imgHeightMm + 12; // below image (mm)
+        pdf.setTextColor(0, 102, 204);
+        pdf.setFontSize(11);
+        // Use textWithLink to create a clickable link in the PDF
+        if (typeof pdf.textWithLink === 'function') {
+          pdf.textWithLink("Open scanned location in Maps", linkX, linkY, { url: mapsUrl });
+        } else {
+          // fallback: draw text and add link rectangle
+          pdf.text("Open scanned location in Maps", linkX, linkY);
+          pdf.link(linkX, linkY - 6, 80, 8, { url: mapsUrl });
+        }
+        pdf.setTextColor(0, 0, 0);
+      }
+
+      pdf.save(`match-report-${Date.now()}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate PDF. Try again or use browser print.");
+    }
+  };
 
   // Handle mode change
   const handleModeChange = (e) => {
@@ -50,6 +152,12 @@ const Matches = () => {
     setScanPreview(file ? URL.createObjectURL(file) : null);
     setAllMatches([]);
     setBestMatch(null);
+    // capture scanner location when uploading an image
+    try {
+      getCurrentLocation();
+    } catch (err) {
+      console.warn("Unable to get location on upload", err);
+    }
   };
 
   // Camera mode handlers
@@ -83,6 +191,13 @@ const Matches = () => {
         setScanPreview(URL.createObjectURL(blob));
       }, "image/jpeg");
 
+      // capture scanner location when capturing from camera
+      try {
+        getCurrentLocation();
+      } catch (err) {
+        console.warn("Unable to get location on camera capture", err);
+      }
+
       setCameraActive(false);
       if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
@@ -110,13 +225,28 @@ const Matches = () => {
         body: formData,
       });
       const data = await response.json();
+      // Normalize Mongoose documents that may have been spread into the response
+      const normalize = (m) => {
+        if (!m) return m;
+        // if it's a mongoose document proxy, real fields may live in _doc
+        const base = m._doc ? { ...m._doc } : { ...m };
+        // keep top-level computed props like similarity, imageUrl, reward, description
+        if (m.similarity !== undefined) base.similarity = m.similarity;
+        if (m.imageUrl !== undefined) base.imageUrl = m.imageUrl;
+        if (m.reward !== undefined) base.reward = m.reward;
+        if (m.description !== undefined) base.description = m.description;
+        return base;
+      };
+
       if (data.matches && data.matches.length > 0) {
-        setAllMatches(data.matches);
+        const normMatches = data.matches.map(normalize);
+        setAllMatches(normMatches);
         console.log("best match", data.bestMatch);
-        setBestMatch(data.bestMatch || data.matches[0]);
+        setBestMatch(normalize(data.bestMatch || data.matches[0]));
       } else if (data.match) {
-        setBestMatch(data.match);
-        setAllMatches(data.match ? [data.match] : []);
+        const norm = normalize(data.match);
+        setBestMatch(norm);
+        setAllMatches(norm ? [norm] : []);
       } else {
         setAllMatches([]);
         setBestMatch(null);
@@ -369,9 +499,9 @@ const Matches = () => {
         )}
       </section>
 
-      {/* Display Best Match */}
+      {/* Display Best Match (GalleryCard) */}
       {bestMatch && (
-        <section style={{ maxWidth: "600px", margin: "30px auto" }}>
+        <section style={{ maxWidth: "900px", margin: "30px auto" }}>
           <h2
             style={{
               fontSize: "1.8rem",
@@ -382,54 +512,106 @@ const Matches = () => {
           >
             Best Match
           </h2>
-          <div
-            style={{
-              marginTop: "10px",
-              background: "#f8fafc",
-              borderRadius: "12px",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
-              padding: "18px",
-              textAlign: "center",
-              border: "2px solid #710707",
-            }}
-          >
-            <img
-              src={bestMatch.imageUrl}
-              alt="Best Match"
-              style={{
-                width: "200px",
-                height: "200px",
-                borderRadius: "8px",
-                border: "2px solid #4a90e2",
-                marginBottom: "10px",
-                objectFit: "cover",
-              }}
-            />
-            <div style={{ color: "black" }}>
-              <p
-                style={{ fontSize: "1.2rem", fontWeight: "300", marginTop: 12 }}
-              >
-                <strong>Description:</strong> {bestMatch.description}
-              </p>
-              <p
-                style={{ fontSize: "1.2rem", fontWeight: "300", marginTop: 12 }}
-              >
-                <strong>Reward:</strong> ₹{bestMatch.reward}
-              </p>
-              <p
+          <div style={{ display: "flex", justifyContent: "center", gap: 20, alignItems: "flex-start", marginTop: 12 }}>
+            <div ref={bestMatchRef}>
+              <GalleryCard item={bestMatch} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <button
+                onClick={handleDownloadPDF}
+                className="upload-btn"
                 style={{
-                  fontSize: "1.2rem",
-                  fontWeight: "300",
-                  marginTop: 12,
-                  color: "#4a90e2",
+                  background: "#4a90e2",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  height: "40px",
+                  padding: "8px 20px",
+                  fontSize: "1rem",
+                  cursor: "pointer",
                 }}
               >
-                <strong>Similarity:</strong> {bestMatch.similarity}%
-              </p>
+                Download PDF
+              </button>
+              <div style={{ minWidth: 180 }}>
+                <p style={{ fontSize: "1rem", color: "#333", margin: 0 }}><strong>Similarity:</strong> {bestMatch.similarity}%</p>
+                <p style={{ fontSize: "0.95rem", color: "#666", marginTop: 8 }}>{bestMatch.description}</p>
+                <p style={{ fontSize: "0.95rem", color: "#666", marginTop: 8 }}>
+                  <strong>Scanned Location:</strong>{" "}
+                  {scanLocation ? (
+                    <>
+                      {scanLocation.latitude.toFixed(6)}, {scanLocation.longitude.toFixed(6)}
+                      <br />
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${scanLocation.latitude},${scanLocation.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Open in Maps
+                      </a>
+                    </>
+                  ) : (
+                    "Not available"
+                  )}
+                </p>
+              </div>
             </div>
           </div>
         </section>
       )}
+
+      {/* Hidden full report used for PDF generation (offscreen) */}
+      <div
+        ref={reportRef}
+        style={{
+          position: "absolute",
+          left: "-10000px",
+          top: 0,
+          width: 800,
+          background: "#fff",
+          color: "#000",
+          padding: 20,
+        }}
+      >
+        <h1>Match Report</h1>
+        <p>Generated: {new Date().toLocaleString()}</p>
+        <hr />
+        <h3>Captured Image</h3>
+        {scanPreview ? (
+          <img src={scanPreview} alt="Captured" style={{ width: 300, height: 300, objectFit: "cover", border: "1px solid #ccc" }} />
+        ) : (
+          <p>No captured image available</p>
+        )}
+        <hr />
+        <h3>Best Match</h3>
+        {bestMatch ? (
+          <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ width: 320 }}>
+              <GalleryCard item={bestMatch} />
+            </div>
+            <div>
+              <p><strong>Similarity:</strong> {bestMatch.similarity}%</p>
+              <p><strong>Description:</strong> {bestMatch.description}</p>
+              <p>
+                <strong>Scanned Location:</strong>{" "}
+                {scanLocation ? (
+                  <>
+                    {scanLocation.latitude.toFixed(6)}, {scanLocation.longitude.toFixed(6)}
+                    <br />
+                    <a href={`https://www.google.com/maps/search/?api=1&query=${scanLocation.latitude},${scanLocation.longitude}`} target="_blank" rel="noopener noreferrer">Open in Maps</a>
+                  </>
+                ) : (
+                  "Not available"
+                )}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p>No best match</p>
+        )}
+        <hr />
+        <p>End of report</p>
+      </div>
 
       <hr
         style={{

@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import { BsChatFill } from "react-icons/bs";
 import { FaInfoCircle, FaShareAlt } from "react-icons/fa";
 import { FaGift, FaHeart, FaRegHeart, FaShare } from "react-icons/fa6";
@@ -110,139 +111,142 @@ export default function GalleryCard({ item }) {
   };
   return (
     <>
-      <div
-        style={{
-          display: showChat ? "block" : "none",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          background: "rgba(0,0,0,0.5)",
-          zIndex: 1000,
-        }}
-        onClick={() => setShowChat(false)}
-      >
-        <div
-          style={{
-            background: "white",
-            borderRadius: "8px",
-            maxWidth: "70%",
-            margin: "80px auto",
-            // padding: "24px",
-            position: "relative",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            style={{
-              position: "absolute",
-              top: "-6px",
-              right: "12px",
-              background: "none",
-              border: "none",
-              fontSize: "45px",
-              cursor: "pointer",
-            }}
-            onClick={() => setShowChat(false)}
-            aria-label="Close"
-          >
-            ×
-          </button>
-          <ChatWindow
-            currentUserId={sessionStorage.getItem("userId")}
-            selectedUserId={selectedUserId}
-            setSelectedUser={setSelectedUserId}
-            userData={otherUserData}
-          />
-        </div>
-      </div>
-      {showInfoModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.5)",
-            zIndex: 1001,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onClick={() => setShowInfoModal(false)}
-        >
+      {showChat &&
+        ReactDOM.createPortal(
           <div
             style={{
-              background: "white",
-              borderRadius: "8px",
-              maxWidth: "400px",
-              width: "90%",
-              padding: "24px",
-              position: "relative",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 1000,
             }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={() => setShowChat(false)}
           >
-            <button
-              style={{
-                position: "absolute",
-                top: "8px",
-                right: "12px",
-                background: "none",
-                border: "none",
-                fontSize: "32px",
-                cursor: "pointer",
-              }}
-              onClick={() => setShowInfoModal(false)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <h2 style={{ textAlign: "center", marginBottom: "16px" }}>
-              Missing Person Details
-            </h2>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+              style={{
+                background: "white",
+                borderRadius: "8px",
+                maxWidth: "70%",
+                margin: "80px auto",
+                position: "relative",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+              }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <img
-                src={item.imageUrl}
-                alt={item.name}
+              <button
                 style={{
-                  width: "100%",
-                  height: "200px",
-                  objectFit: "cover",
-                  borderRadius: "6px",
-                  marginBottom: "12px",
+                  position: "absolute",
+                  top: "-6px",
+                  right: "12px",
+                  background: "none",
+                  border: "none",
+                  fontSize: "45px",
+                  cursor: "pointer",
                 }}
+                onClick={() => setShowChat(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+              <ChatWindow
+                currentUserId={sessionStorage.getItem("userId")}
+                selectedUserId={selectedUserId}
+                setSelectedUser={setSelectedUserId}
+                userData={otherUserData}
               />
-              <div>
-                <strong>Name:</strong> {item.name}
-              </div>
-              <div>
-                <strong>Age:</strong> {item.age}
-              </div>
-              <div>
-                <strong>Gender:</strong> {item.gender}
-              </div>
-              <div>
-                <strong>Contact Email:</strong> {otherUserData.email || "N/A"}
-              </div>
-              <div>
-                <strong>Address:</strong> {item.address || "N/A"}
-              </div>
-              <div>
-                <strong>Description:</strong> {item.description || "N/A"}
-              </div>
-              <div>
-                <strong>Reward:</strong> ₹{item.reward}
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {showInfoModal &&
+        ReactDOM.createPortal(
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 1001,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={() => setShowInfoModal(false)}
+          >
+            <div
+              style={{
+                background: "white",
+                borderRadius: "8px",
+                maxWidth: "400px",
+                width: "90%",
+                padding: "24px",
+                position: "relative",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                style={{
+                  position: "absolute",
+                  top: "8px",
+                  right: "12px",
+                  background: "none",
+                  border: "none",
+                  fontSize: "32px",
+                  cursor: "pointer",
+                }}
+                onClick={() => setShowInfoModal(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+              <h2 style={{ textAlign: "center", marginBottom: "16px" }}>
+                Missing Person Details
+              </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  style={{
+                    width: "100%",
+                    height: "200px",
+                    objectFit: "cover",
+                    borderRadius: "6px",
+                    marginBottom: "12px",
+                  }}
+                />
+                <div>
+                  <strong>Name:</strong> {item.name}
+                </div>
+                <div>
+                  <strong>Age:</strong> {item.age}
+                </div>
+                <div>
+                  <strong>Gender:</strong> {item.gender}
+                </div>
+                <div>
+                  <strong>Contact Email:</strong> {otherUserData.email || "N/A"}
+                </div>
+                <div>
+                  <strong>Address:</strong> {item.address || "N/A"}
+                </div>
+                <div>
+                  <strong>Description:</strong> {item.description || "N/A"}
+                </div>
+                <div>
+                  <strong>Reward:</strong> ₹{item.reward}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
       <div key={item._id} style={styles.containerStyle}>
         <div className="uploader-section" style={styles.uploaderSection}>
           <div
