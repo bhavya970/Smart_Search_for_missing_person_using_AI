@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Navbar from "./Navbar";
 import GalleryCard from "./Gallery/GalleryCard";
+import ShimmerUIMatches from "./ShimmerUIMatches";
 
 const Matches = () => {
   const [mode, setMode] = useState("upload"); // "camera" or "upload"
@@ -21,6 +22,26 @@ const Matches = () => {
   const bestMatchRef = useRef(null);
   const reportRef = useRef(null);
   const [scanLocation, setScanLocation] = useState(null);
+
+  // Bump similarity according to ranges requested by user:
+  // - if 50 <= sim < 60: add random 30..40
+  // - if 60 <= sim <= 70: add random 20..30
+  // cap result at 100
+  const bumpSimilarityIfNeeded = (match) => {
+    if (!match) return match;
+    const sim = Number(match.similarity) || 0;
+    if (sim >= 50 && sim < 60) {
+      const extra = Math.floor(Math.random() * 11) + 30; // 30..40
+      const newSim = Math.min(100, sim + extra);
+      return { ...match, similarity: newSim };
+    }
+    if (sim >= 60 && sim <= 70) {
+      const extra = Math.floor(Math.random() * 11) + 20; // 20..30
+      const newSim = Math.min(100, sim + extra);
+      return { ...match, similarity: newSim };
+    }
+    return match;
+  };
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) return;
@@ -242,11 +263,24 @@ const Matches = () => {
         const normMatches = data.matches.map(normalize);
         setAllMatches(normMatches);
         console.log("best match", data.bestMatch);
-        setBestMatch(normalize(data.bestMatch || data.matches[0]));
+        const bumped = bumpSimilarityIfNeeded(normalize(data.bestMatch || data.matches[0]));
+        if (Number(bumped?.similarity) < 50) {
+          // treat as no match
+          setAllMatches([]);
+          setBestMatch(null);
+        } else {
+          setBestMatch(bumped);
+        }
       } else if (data.match) {
         const norm = normalize(data.match);
-        setBestMatch(norm);
-        setAllMatches(norm ? [norm] : []);
+        const bumped = bumpSimilarityIfNeeded(norm);
+        if (Number(bumped?.similarity) < 50) {
+          setAllMatches([]);
+          setBestMatch(null);
+        } else {
+          setBestMatch(bumped);
+          setAllMatches(bumped ? [bumped] : []);
+        }
       } else {
         setAllMatches([]);
         setBestMatch(null);
@@ -285,7 +319,7 @@ const Matches = () => {
               body: JSON.stringify({
                 to: user.email,
                 subject: "Face Match Alert",
-                text: `A new face match with ${bestMatch.similarity}% similarity was found for your uploaded image (${bestMatch.description}). Please check the platform for details.`,
+                // text: `A new face match with ${bestMatch.similarity}% similarity was found for your uploaded image (${bestMatch.description}). Please check the platform for details.`,
               }),
             });
           }
@@ -338,6 +372,15 @@ const Matches = () => {
           </p>
         </div>
       </section>
+
+      {/* Shimmer UI while scanning (full-screen overlay) */}
+      {scanLoading && (
+        <div className="shimmer-overlay">
+          <div className="shimmer-center">
+            <ShimmerUIMatches />
+          </div>
+        </div>
+      )}
 
       {/* Radio buttons for mode selection */}
 
@@ -621,92 +664,23 @@ const Matches = () => {
         }}
       />
       {/* Display All Matches */}
-      {allMatches.length > 0 && (
-        <section style={{ maxWidth: "900px", margin: "30px auto" }}>
-          <h2
-            style={{
-              fontSize: "1.8rem",
-              fontWeight: "500",
-              marginTop: 48,
-              color: "black",
-            }}
-          >
-            All Matches
-          </h2>
-          <div className="gallery-grid">
-            {allMatches.map((match, idx) => (
-              <div
-                key={idx}
-                className="gallery-card"
-                style={{
-                  background: "#fff",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  marginBottom: "18px",
-                  border: "2px solid #e3eafc",
-                }}
-              >
-                <img
-                  src={match.imageUrl}
-                  alt="Match"
-                  className="gallery-img"
-                  style={{
-                    width: "140px",
-                    height: "140px",
-                    objectFit: "cover",
-                    borderBottom: "1px solid #eee",
-                  }}
-                />
-                <div
-                  className="gallery-info"
-                  style={{ padding: "12px", width: "100%" }}
-                >
-                  <p
-                    className="gallery-desc"
-                    style={{
-                      margin: "0 0 8px 0",
-                      fontSize: "1.2rem",
-                      color: "black",
-                      fontWeight: "300",
-                    }}
-                  >
-                    {match.description}
-                  </p>
-                  <span
-                    className="gallery-reward"
-                    style={{
-                      fontSize: "1.2rem",
-                      color: "black",
-                      fontWeight: "300",
-                    }}
-                  >
-                    Reward: ₹{match.reward}
-                  </span>
-                  <div
-                    style={{
-                      marginTop: "6px",
-                      color: "#4a90e2",
-                      fontSize: "1.2rem",
-                      fontWeight: "300",
-                    }}
-                  >
-                    Similarity: {match.similarity}%
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      
+        
+     
 
       {/* No matches found */}
       {!scanLoading && !bestMatch && scanPreview && (
-        <p style={{ marginTop: "20px", color: "#888", textAlign: "center" }}>
-          No match found in database.
+        <p
+          style={{
+            marginTop: "20px",
+            color: "#333",
+            textAlign: "center",
+            fontSize: "1.6rem",
+            fontWeight: 600,
+            letterSpacing: "0.3px",
+          }}
+        >
+          Not Match Found in DataBase
         </p>
       )}
     </div>
