@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ShimmerUpload from "./../../components/ShimmerUpload";
 import "./../../components/Home.css";
+import "./../../components/ShimmerUpload.css";
 
 const styles = {
   inputButtonStyle: {
@@ -55,6 +57,7 @@ const Upload = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [uploadComplete, setUploadComplete] = useState(false);
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {
@@ -115,17 +118,22 @@ const Upload = () => {
       });
       const data = await response.json();
       if (data.success) {
-        alert("✅ Image uploaded successfully!");
-        navigate("/home");
+        // trigger shimmer to finish (it will animate to 100% and show success message)
+        setUploadComplete(true);
+        // keep `loading` true so overlay remains visible; navigate after a short delay
+        setTimeout(() => {
+          setLoading(false);
+          navigate("/home?tab=uploads");
+        }, 1400);
       } else {
         setFormErrors({
           ...formErrors,
           photoError: data.error || "Upload failed.",
         });
+        setLoading(false);
       }
     } catch (err) {
       setError("Server error. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -189,6 +197,14 @@ const Upload = () => {
       </section>
 
       {/* Upload Section */}
+      {/* shimmer overlay during upload */}
+      {loading && (
+        <div className="shimmer-overlay">
+          <div className="shimmer-center">
+            <ShimmerUpload complete={uploadComplete} />
+          </div>
+        </div>
+      )}
       <section
         style={{
           background: "rgba(255,255,255,0.22)",

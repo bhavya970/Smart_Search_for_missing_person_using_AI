@@ -119,7 +119,7 @@
 
 // export default Home;
 import React, { useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { ImageContext } from "../../context/ImageContext";
 import "./Home.css";
 import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
@@ -134,6 +134,9 @@ import MyUploads from "../../components/Gallery/MyUploads";
 
 const Home = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialTab = params.get("tab") || "gallery";
   const { uploadedImages } = useContext(ImageContext);
 
   // local state for likes & comments
@@ -141,7 +144,7 @@ const Home = () => {
   const [showCommentBox, setShowCommentBox] = useState({});
   const [comments, setComments] = useState({});
   const [commentInput, setCommentInput] = useState({});
-  const [activeTab, setActiveTab] = useState("gallery");
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   const handleLike = (index) => {
     setLikes((prev) => ({
