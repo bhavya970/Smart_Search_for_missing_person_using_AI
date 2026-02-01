@@ -16,11 +16,15 @@ const MyUploads = () => {
       .then((data) => {
         console.log("fetched cases", data);
         setCases(data);
-        // setLikes(data.likeCount || 0);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
+
+  const handleDelete = (id) => {
+    // remove case from local list after backend deletion
+    setCases((prev) => prev.filter((c) => c._id !== id));
+  };
 
 
   return (
@@ -33,8 +37,7 @@ const MyUploads = () => {
       ) : (
         <div className="gallery-grid">
           {cases.map((item) => (
-            <UploadedCard key={item._id} item={item} />
-           
+            <UploadedCard key={item._id} item={item} onDelete={handleDelete} showDelete />
           ))}
         </div>
       )}

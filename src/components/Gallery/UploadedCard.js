@@ -3,10 +3,11 @@ import { BsChatFill } from "react-icons/bs";
 import { FaInfoCircle, FaShareAlt } from "react-icons/fa";
 import { FaGift, FaHeart, FaRegHeart, FaShare } from "react-icons/fa6";
 import { FiInfo } from "react-icons/fi";
+import { FaTrashAlt } from "react-icons/fa";
 import { PiShareFatFill } from "react-icons/pi";
 import ChatWindow from "../ChatWindow/Chat";
 
-export default function UploadedCard({ item }) {
+export default function UploadedCard({ item, onDelete, showDelete }) {
   const [likeCount, setLikeCount] = React.useState(item.likeCount || 0);
   const [liked, setLiked] = React.useState(false);
   const [showChat, setShowChat] = React.useState(false);
@@ -15,6 +16,9 @@ export default function UploadedCard({ item }) {
     item.uploadedUserId
   );
   const [showInfoModal, setShowInfoModal] = React.useState(false);
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
+  const [unreadCount, setUnreadCount] = React.useState(0);
 
   React.useEffect(() => {
     const fetchUserDetails = async () => {
@@ -36,6 +40,25 @@ export default function UploadedCard({ item }) {
     if (item.uploadedUserId) {
       fetchUserDetails();
     }
+  }, [item.uploadedUserId]);
+
+  // fetch unread count for chat with uploader
+  React.useEffect(() => {
+    const currentUserId = sessionStorage.getItem('userId');
+    if (!currentUserId || !item.uploadedUserId) return;
+    // fetch chat contacts and find unread count for this uploader
+    fetch(`http://localhost:5000/api/chat-contacts/${currentUserId}`)
+      .then((res) => res.json())
+      .then((contacts) => {
+        if (!Array.isArray(contacts)) return;
+        const contact = contacts.find((c) => String(c.userId) === String(item.uploadedUserId));
+        if (contact) {
+          // backend may provide different field names for unread count
+          const count = contact.unreadCount ?? contact.unread ?? contact.unreadMessages ?? 0;
+          setUnreadCount(Number(count) || 0);
+        }
+      })
+      .catch(() => {});
   }, [item.uploadedUserId]);
 
   const handleLike = async () => {
@@ -196,6 +219,78 @@ export default function UploadedCard({ item }) {
           </div>
         </div>
       )}
+      {showDeleteModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 1001,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <div
+            style={{
+              background: "white",
+              borderRadius: "8px",
+              maxWidth: "520px",
+              width: "92%",
+              padding: "18px",
+              position: "relative",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "12px",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: 0 }}>Are you sure you want to delete this item?</h3>
+            <img
+              src={item.imageUrl}
+              alt={item.name}
+              style={{ width: "320px", height: "240px", objectFit: "cover", borderRadius: 8 }}
+            />
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                style={{ padding: "10px 20px", background: "#9aa0b4", color: "white", border: "none", borderRadius: 6 }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (deleting) return;
+                  setDeleting(true);
+                  try {
+                    const res = await fetch(`http://localhost:5000/api/case/${item._id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                      if (typeof onDelete === 'function') onDelete(item._id);
+                      setShowDeleteModal(false);
+                    } else {
+                      alert('Delete failed');
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    alert('Server error');
+                  } finally {
+                    setDeleting(false);
+                  }
+                }}
+                style={{ padding: "10px 20px", background: "#e15b5b", color: "white", border: "none", borderRadius: 6 }}
+              >
+                {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div key={item._id} style={styles.containerStyle}>
         
         <img src={item.imageUrl} alt="Missing Person" style={styles.image} />
@@ -221,12 +316,41 @@ export default function UploadedCard({ item }) {
                       />
                     </div>
                   </div>
-                  <div>
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <div style={{ position: 'relative' }}>
+                      <BsChatFill
+                        title="Chat"
+                        style={{ height: 22, width: 22, cursor: 'pointer' }}
+                        onClick={handleChatClick}
+                      />
+                      {unreadCount > 0 && (
+                        <span style={{
+                          position: 'absolute',
+                          top: -8,
+                          right: -8,
+                          background: '#e53935',
+                          color: 'white',
+                          borderRadius: '50%',
+                          padding: '2px 6px',
+                          fontSize: 11,
+                          fontWeight: 700,
+                          lineHeight: 1,
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                        }}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                      )}
+                    </div>
                     <FiInfo
                       title="More info"
                       style={{ height: "24px", width: "24px", cursor: "pointer" }}
                       onClick={() => setShowInfoModal(true)}
                     />
+                    {showDelete && (
+                      <FaTrashAlt
+                        title="Delete"
+                        style={{ height: 22, width: 22, cursor: 'pointer', color: '#d33' }}
+                        onClick={() => setShowDeleteModal(true)}
+                      />
+                    )}
                   </div>
                 </div>
         <div style={styles.profileInfo}>
